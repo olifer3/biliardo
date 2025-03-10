@@ -1,7 +1,7 @@
+#include <billiard.hpp>
 #include <iostream>
 
-int main(){
-    int a{1};
-    std::cout<<a;
+int main() {
+  int a{1};
+  std::cout << a;
 }
-non
