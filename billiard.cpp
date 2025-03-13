@@ -37,4 +37,6 @@ void Billiard::print_info() /*const*/ {
             << " Right height = " << r2_ << "\n"
             << " Upper wall slope = " << upper_slope() << "\n"
             << " Lower wall slope = " << lower_slope() << "\n";
-}
+
+            
+            }

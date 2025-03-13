@@ -11,6 +11,7 @@ class Billiard {
 
  public:
   Billiard(double length, double r1, double r2);
+
   std::array<std::array<double, 2>, 2> upper_segment() const;
   std::array<std::array<double, 2>, 2> lower_segment() const;
 
