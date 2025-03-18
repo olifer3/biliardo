@@ -1,9 +1,11 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include <utility>
+
 #include "billiard.hpp"
 #include "particle.hpp"
-#include <iostream>
 
-int main()
-{
+int main() {
   double length, r1, r2;
   std::cout << "Enter billiard length: ";
   std::cin >> length;
@@ -23,8 +25,10 @@ int main()
   auto upper_norm = billiard.upper_normal();
   auto lower_norm = billiard.lower_normal();
 
-  std::cout << "Upper normal: (" << upper_norm[0] << ", " << upper_norm[1] << ")\n";
-  std::cout << "Lower normal: (" << lower_norm[0] << ", " << lower_norm[1] << ")\n";
+  std::cout << "Upper normal: (" << upper_norm[0] << ", " << upper_norm[1]
+            << ")\n";
+  std::cout << "Lower normal: (" << lower_norm[0] << ", " << lower_norm[1]
+            << ")\n";
 
   // Chiedi i parametri della particella
   double y0, theta0, velocity;
@@ -44,8 +48,71 @@ int main()
   std::cout << "\nInitial state of the particle:\n";
   particle.print_state();
 
+  sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
+  sf::Vector2f windowSize(window.getSize().x, window.getSize().y);
+  sf::View view;
+  view.setSize(windowSize);
+  view.setCenter(0, windowSize.y / 2);
+  window.setView(view);
+
+  window.setVerticalSyncEnabled(false);
+
+  // Disegna l'asse X (orizzontale)
+  sf::RectangleShape xAxis(sf::Vector2f(
+      windowSize.x, 2));  // Linea orizzontale lunga quanto la finestra
+  xAxis.setFillColor(sf::Color::Red);  // Colore rosso per l'asse X
+  xAxis.setPosition(
+      -windowSize.x / 2,
+      windowSize.y / 2);  // Posiziona la linea al centro in altezza
+
+  // Disegna l'asse Y (verticale)
+  sf::RectangleShape yAxis(sf::Vector2f(
+      2, windowSize.y));  // Linea verticale alta quanto la finestra
+  yAxis.setFillColor(sf::Color::Blue);  // Colore blu per l'asse Y
+  yAxis.setPosition(-windowSize.x / 2,
+                    0);  // Posiziona la linea lungo il bordo sinistro
+
+  sf::Vertex lineUp[] = {
+      sf::Vertex(billiard.PointsUp(windowSize)[0], sf::Color::White),
+      sf::Vertex(billiard.PointsUp(windowSize)[1], sf::Color::White)};
+  sf::Vertex lineLow[] = {
+      sf::Vertex(billiard.PointsLow(windowSize)[0], sf::Color::Green),
+      sf::Vertex(billiard.PointsLow(windowSize)[1], sf::Color::Green)};
+
+  sf::CircleShape particleShape(10);
+  particleShape.setFillColor(sf::Color::Red);
+  sf::Clock clock;
+  float deltaTime = clock.restart().asSeconds();
+
+  while (window.isOpen()) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) window.close();
+    }
+    float deltaTime = clock.restart().asSeconds();
+
+    // particleShape.setPosition(sf::Vector2f(particle.getPosition()[0],
+    // particle.getPosition()[1]));
+    particleShape.setPosition(particle.getPosition().x - windowSize.x / 2,
+                              particle.getPosition().y + windowSize.y / 2);
+
+    // Muovi la particella all'interno del biliardo
+    particle.move(billiard, deltaTime);
+    window.clear();
+    window.draw(xAxis);
+    window.draw(yAxis);
+    window.draw(lineUp, 2, sf::Lines);
+    window.draw(lineLow, 2, sf::Lines);
+    window.draw(particleShape);
+    window.display();
+  }
+
   // Muovi la particella all'interno del biliardo
-  particle.move(billiard);
+  /*particle.move(billiard, deltaTime);
+
+  window.clear();
+  window.draw(particleShape);
+  window.display();*/
 
   // Stampa lo stato finale della particella
   std::cout << "\nFinal state of the particle:\n";

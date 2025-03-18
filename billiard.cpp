@@ -3,19 +3,19 @@
 #include <cmath>
 #include <iostream>
 
-Billiard::Billiard(double length, double r1, double r2)
+Billiard::Billiard(float length, float r1, float r2)
     : length_{length}, r1_{r1}, r2_{r2} {}
 
-std::array<std::array<double, 2>, 2> Billiard::upper_segment() const {
+std::vector<sf::Vector2f> Billiard::upper_segment() const {
   return {{{0, r1_}, {length_, r2_}}};
 }
 
-std::array<std::array<double, 2>, 2> Billiard::lower_segment() const {
+std::vector<sf::Vector2f> Billiard::lower_segment() const {
   return {{{0, -r1_}, {length_, -r2_}}};
 }
 
-double Billiard::upper_slope() const { return (r2_ - r1_) / length_; }
-double Billiard::lower_slope() const { return (-r2_ + r1_) / length_; }
+float Billiard::upper_slope() const { return (r2_ - r1_) / length_; }
+float Billiard::lower_slope() const { return (-r2_ + r1_) / length_; }
 
 std::array<double, 2> Billiard::upper_normal() const {
   double norm_x = -(upper_slope());

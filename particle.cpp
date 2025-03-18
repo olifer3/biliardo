@@ -4,19 +4,19 @@
 Particle::Particle(double y0, double theta0, double velocity)
     : position_{0, y0}, angle_{theta0}, velocity_{velocity} {}
 
-void Particle::move(Billiard const& billiard) {
+void Particle::move(Billiard const& billiard, float deltaTime) {
   double x = position_[0];
   double y = position_[1];
 
-  double dx = velocity_ * std::cos(angle_);
-  double dy = velocity_ * std::sin(angle_);
+  double dx = velocity_ * std::cos(angle_) * deltaTime;
+  double dy = velocity_ * std::sin(angle_)* deltaTime;
 
-  while (x <= billiard.upper_segment()[1][0]) {  // Continua finché non arriva a x = ℓ
+  //while (x <= billiard.upper_segment()[1][0]) {  // Continua finché non arriva a x = ℓ
     x += dx;
     y += dy;
 
     // Controllo se la particella colpisce il bordo superiore
-    double expected_y_upper = billiard.upper_slope() * x + billiard.upper_segment()[0][1];
+    double expected_y_upper = billiard.upper_slope() * x + billiard.upper_segment()[0].y;
     if (y >= expected_y_upper) {
       auto normal = billiard.upper_normal();
       double dot_product = dx * normal[0] + dy * normal[1];
@@ -28,7 +28,7 @@ void Particle::move(Billiard const& billiard) {
     }
 
     // Controllo se la particella colpisce il bordo inferiore
-    double expected_y_lower = billiard.lower_slope() * x + billiard.lower_segment()[0][1];
+    double expected_y_lower = billiard.lower_slope() * x + billiard.lower_segment()[0].y;
     if (y <= expected_y_lower) {
       auto normal = billiard.lower_normal();
       double dot_product = dx * normal[0] + dy * normal[1];
@@ -38,7 +38,7 @@ void Particle::move(Billiard const& billiard) {
 
       angle_ = std::atan2(dy, dx);
     }
-  }
+  //}
 
   position_ = {x, y};
 }

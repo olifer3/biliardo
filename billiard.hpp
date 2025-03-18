@@ -1,25 +1,35 @@
 #ifndef BILLIARD_HPP
 #define BILLIARD_HPP
 
-#include <array>
+#include <vector>
+#include <SFML/Graphics.hpp>
 
 class Billiard {
  private:
-  double length_;
-  double r1_;
-  double r2_;
+  float length_;
+  float r1_;
+  float r2_;
 
  public:
-  Billiard(double length, double r1, double r2);
+  Billiard(float length, float r1, float r2);
 
-  std::array<std::array<double, 2>, 2> upper_segment() const;
-  std::array<std::array<double, 2>, 2> lower_segment() const;
+  std::vector<sf::Vector2f> upper_segment() const;
+  std::vector<sf::Vector2f> lower_segment() const;
 
-  double upper_slope() const;
-  double lower_slope() const;
+  float upper_slope() const;
+  float lower_slope() const;
 
   std::array<double, 2> upper_normal() const;
   std::array<double, 2> lower_normal() const;
+
+  std::vector<sf::Vector2f> PointsUp(sf::Vector2f windowSize) const {
+    return {{{0-windowSize.x/2, -r1_+windowSize.y/2}, {length_-windowSize.x/2, -r2_+windowSize.y/2}}};
+  }
+
+  std::vector<sf::Vector2f> PointsLow(sf::Vector2f windowSize) const {
+    return {{{0-windowSize.x/2, +r1_+windowSize.y/2}, {length_-windowSize.x/2, +r2_+windowSize.y/2}}};
+  }
+ 
 
   void print_info() /*const*/;
 };
