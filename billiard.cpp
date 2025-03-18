@@ -1,5 +1,6 @@
 #include "billiard.hpp"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
