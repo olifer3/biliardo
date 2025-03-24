@@ -1,49 +1,40 @@
 #include "particle.hpp"
+
 #include <cmath>
 
 Particle::Particle(float y0, float theta0, float velocity)
     : position_{0, y0}, angle_{theta0}, velocity_{velocity} {}
 
-void Particle::move (const Billiard & billiard, float deltaTime) {
+void Particle::move(const Billiard& billiard, float deltaTime) {
   float x = position_.x;
   float y = position_.y;
 
   float dx = velocity_ * std::cos(angle_) * deltaTime;
   float dy = velocity_ * std::sin(angle_) * deltaTime;
 
-  //while (x <= billiard.upper_segment()[1][0]) {  // Continua finché non arriva a x = ℓ
-    x += dx;
-    y += dy;
+  x += dx;
+  y += dy;
 
-    // Controllo se la particella colpisce il bordo superiore
-    float expected_y_upper = billiard.upper_slope() * x + billiard.upper_segment()[0].y;
-    if (y >= expected_y_upper) {
-      auto normal = billiard.upper_normal();
-      float dot_product = dx * normal[0] + dy * normal[1];
+  // Controllo se la particella colpisce il bordo superiore
+  float expected_y_upper =
+      billiard.upper_slope() * x + billiard.upper_segment()[0].y;
+  if (y >= expected_y_upper&&angle_>0) {
+    float alpha = static_cast<float>(atan(billiard.upper_slope()));
+    angle_ = -(angle_- 2.f * alpha);
+  }
 
-      dx -= 2 * dot_product * normal[0];
-      dy -= 2 * dot_product * normal[1];
-
-      angle_ = std::atan2(dy, dx);
-    }
-
-    // Controllo se la particella colpisce il bordo inferiore
-    float expected_y_lower = billiard.lower_slope() * x + billiard.lower_segment()[0].y;
-    if (y <= expected_y_lower) {
-      auto normal = billiard.lower_normal();
-      float dot_product = dx * normal[0] + dy * normal[1];
-
-      dx -= 2 * dot_product * normal[0];
-      dy -= 2 * dot_product * normal[1];
-
-      angle_ = std::atan2(dy, dx);
-
-    }
-    position_ = {x, y};
-    std::cout<<"Provaa";
+  // Controllo se la particella colpisce il bordo inferiore
+  float expected_y_lower =
+      billiard.lower_slope() * x + billiard.lower_segment()[0].y;
+  if (y <= expected_y_lower&&angle_<0) {
+    float alpha = static_cast<float>(atan(billiard.lower_slope()));
+    angle_ = +(abs(angle_) - 2.f * alpha);
+  }
+  position_ = {x, y};
 }
 
 void Particle::print_state() const {
-  std::cout << "Particle position: (" << position_.x << ", " << position_.y << ")\n"
+  std::cout << "Particle position: (" << position_.x << ", " << position_.y
+            << ")\n"
             << "Direction (theta): " << angle_ << " rad\n";
 }

@@ -96,9 +96,9 @@ int main() {
     // Muovi la particella all'interno del biliardo
 
     if (particle.getPosition().x <= billiard.getLength()) {
-      std::cout<<"MOve";
+      
       particle.move(billiard, deltaTime);
-
+      std::cout<<particle.getAngle()<<"  ";
     particleShape.setPosition(particle.getPosition() + offset);
     window.clear();
     window.draw(xAxis);

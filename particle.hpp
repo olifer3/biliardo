@@ -17,7 +17,7 @@ class Particle {
 
   void move(Billiard const& billiard, float deltaTime);
   sf::Vector2f getPosition() const { return sf::Vector2f(position_.x, position_.y); }
-  float angle() const { return angle_; }
+  float getAngle() const { return angle_; }
 
 
 
