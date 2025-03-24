@@ -4,12 +4,12 @@
 Particle::Particle(float y0, float theta0, float velocity)
     : position_{0, y0}, angle_{theta0}, velocity_{velocity} {}
 
-sf::Vector2f Particle::move(Billiard const& billiard) {
+void Particle::move (const Billiard & billiard, float deltaTime) {
   float x = position_.x;
   float y = position_.y;
 
-  float dx = velocity_ * std::cos(angle_);
-  float dy = velocity_ * std::sin(angle_);
+  float dx = velocity_ * std::cos(angle_) * deltaTime;
+  float dy = velocity_ * std::sin(angle_) * deltaTime;
 
   //while (x <= billiard.upper_segment()[1][0]) {  // Continua finché non arriva a x = ℓ
     x += dx;
@@ -40,7 +40,7 @@ sf::Vector2f Particle::move(Billiard const& billiard) {
 
     }
     position_ = {x, y};
-    return position_;
+    std::cout<<"Provaa";
 }
 
 void Particle::print_state() const {

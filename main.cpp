@@ -49,7 +49,7 @@ int main() {
   particle.print_state();
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
-  sf::Vector2f windowSize(window.getSize().x, window.getSize().y);
+  sf::Vector2f windowSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
   sf::View view;
   view.setSize(windowSize);
   view.setCenter(0, windowSize.y / 2);
@@ -79,36 +79,36 @@ int main() {
       sf::Vertex(billiard.PointsLow(windowSize)[0], sf::Color::Green),
       sf::Vertex(billiard.PointsLow(windowSize)[1], sf::Color::Green)};
 
-  sf::CircleShape particleShape(10);
+  sf::CircleShape particleShape(5);
+  sf::Vector2f offset{-windowSize.x / 2.f, windowSize.y / 2.f};
   particleShape.setFillColor(sf::Color::Red);
-  //sf::Clock clock;
+  sf::Clock clock;
   //float deltaTime = clock.restart().asSeconds();
-
+  particleShape.setPosition(particle.getPosition() + offset);
+  
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) window.close();
     }
-    //float deltaTime = clock.restart().asSeconds();
-
-    particleShape.setPosition(particle.getPosition().x - windowSize.x / 2,
-                              particle.getPosition().y + windowSize.y / 2);
+    float deltaTime = clock.restart().asSeconds();
 
     // Muovi la particella all'interno del biliardo
-    while (particle.getPosition().x <= billiard.getLength()) {
-      particle.move(billiard);
+
+    if (particle.getPosition().x <= billiard.getLength()) {
+      std::cout<<"MOve";
+      particle.move(billiard, deltaTime);
+
+    particleShape.setPosition(particle.getPosition() + offset);
+    window.clear();
     window.draw(xAxis);
     window.draw(yAxis);
     window.draw(lineUp, 2, sf::Lines);
     window.draw(lineLow, 2, sf::Lines);
     window.draw(particleShape);
     window.display();
-    window.clear();
-    }
-
-    
   }
-
+  }
   // Stampa lo stato finale della particella
   std::cout << "\nFinal state of the particle:\n";
   particle.print_state();
