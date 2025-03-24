@@ -24,8 +24,8 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-o
 #   le dipendenze vengono identificate automaticamente
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-add_executable(mandelbrot main.cpp billiard.cpp particle.cpp)
-target_link_libraries(mandelbrot PRIVATE sfml-graphics)
+add_executable(billiard main.cpp billiard.cpp particle.cpp)
+target_link_libraries(billiard  PRIVATE sfml-graphics)
 
 # se il testing e' abilitato...
 #   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione

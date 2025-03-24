@@ -6,7 +6,7 @@
 #include "particle.hpp"
 
 int main() {
-  double length, r1, r2;
+  float length, r1, r2;
   std::cout << "Enter billiard length: ";
   std::cin >> length;
 
@@ -31,7 +31,7 @@ int main() {
             << ")\n";
 
   // Chiedi i parametri della particella
-  double y0, theta0, velocity;
+  float y0, theta0, velocity;
   std::cout << "Enter initial y position of particle: ";
   std::cin >> y0;
 
@@ -81,38 +81,33 @@ int main() {
 
   sf::CircleShape particleShape(10);
   particleShape.setFillColor(sf::Color::Red);
-  sf::Clock clock;
-  float deltaTime = clock.restart().asSeconds();
+  //sf::Clock clock;
+  //float deltaTime = clock.restart().asSeconds();
 
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) window.close();
     }
-    float deltaTime = clock.restart().asSeconds();
+    //float deltaTime = clock.restart().asSeconds();
 
-    // particleShape.setPosition(sf::Vector2f(particle.getPosition()[0],
-    // particle.getPosition()[1]));
     particleShape.setPosition(particle.getPosition().x - windowSize.x / 2,
                               particle.getPosition().y + windowSize.y / 2);
 
     // Muovi la particella all'interno del biliardo
-    particle.move(billiard, deltaTime);
-    window.clear();
+    while (particle.getPosition().x <= billiard.getLength()) {
+      particle.move(billiard);
     window.draw(xAxis);
     window.draw(yAxis);
     window.draw(lineUp, 2, sf::Lines);
     window.draw(lineLow, 2, sf::Lines);
     window.draw(particleShape);
     window.display();
+    window.clear();
+    }
+
+    
   }
-
-  // Muovi la particella all'interno del biliardo
-  /*particle.move(billiard, deltaTime);
-
-  window.clear();
-  window.draw(particleShape);
-  window.display();*/
 
   // Stampa lo stato finale della particella
   std::cout << "\nFinal state of the particle:\n";

@@ -19,8 +19,8 @@ class Billiard {
   float upper_slope() const;
   float lower_slope() const;
 
-  std::array<double, 2> upper_normal() const;
-  std::array<double, 2> lower_normal() const;
+  std::array<float, 2> upper_normal() const;
+  std::array<float, 2> lower_normal() const;
 
   std::vector<sf::Vector2f> PointsUp(sf::Vector2f windowSize) const {
     return {{{0-windowSize.x/2, -r1_+windowSize.y/2}, {length_-windowSize.x/2, -r2_+windowSize.y/2}}};
@@ -30,7 +30,7 @@ class Billiard {
     return {{{0-windowSize.x/2, +r1_+windowSize.y/2}, {length_-windowSize.x/2, +r2_+windowSize.y/2}}};
   }
  
-
+  float getLength() const {return length_;}
   void print_info() /*const*/;
 };
 

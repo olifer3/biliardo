@@ -18,17 +18,17 @@ std::vector<sf::Vector2f> Billiard::lower_segment() const {
 float Billiard::upper_slope() const { return (r2_ - r1_) / length_; }
 float Billiard::lower_slope() const { return (-r2_ + r1_) / length_; }
 
-std::array<double, 2> Billiard::upper_normal() const {
-  double norm_x = -(upper_slope());
-  double norm_y = 1;
-  double norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
+std::array<float, 2> Billiard::upper_normal() const {
+  float norm_x = -(upper_slope());
+  float norm_y = 1;
+  float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
   return { norm_x / norm_lenght, norm_y / norm_lenght };
 }
 
-std::array<double, 2> Billiard::lower_normal() const {
-  double norm_x = -(lower_slope());
-  double norm_y = 1;
-  double norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
+std::array<float, 2> Billiard::lower_normal() const {
+  float norm_x = -(lower_slope());
+  float norm_y = 1;
+  float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
   return { norm_x / norm_lenght, norm_y / norm_lenght };
 }
 void Billiard::print_info() /*const*/ {
