@@ -18,16 +18,19 @@ class Billiard {
 
   float upper_slope() const;
   float lower_slope() const;
+  //float left_height_() const;
+  float upper_surface_intercept() const;
+  float lower_surface_intercept() const;
 
   std::array<float, 2> upper_normal() const;
   std::array<float, 2> lower_normal() const;
 
   std::vector<sf::Vector2f> PointsUp(sf::Vector2f windowSize) const {
-    return {{{0-windowSize.x/2, -r1_+windowSize.y/2}, {length_-windowSize.x/2, -r2_+windowSize.y/2}}};
+    return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, +r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, +r2_+windowSize.y/2}}};
   }
 
   std::vector<sf::Vector2f> PointsLow(sf::Vector2f windowSize) const {
-    return {{{0-windowSize.x/2, +r1_+windowSize.y/2}, {length_-windowSize.x/2, +r2_+windowSize.y/2}}};
+    return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, -r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, -r2_+windowSize.y/2}}};
   }
  
   float getLength() const {return length_;}

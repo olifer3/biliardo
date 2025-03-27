@@ -5,7 +5,8 @@
 #include "billiard.hpp"
 #include "particle.hpp"
 
-int main() {
+int main()
+{
   float length, r1, r2;
   std::cout << "Enter billiard length: ";
   std::cin >> length;
@@ -51,67 +52,91 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
   sf::Vector2f windowSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
   sf::View view;
-  view.setSize(windowSize);
+  // view.setSize(windowSize);
+  view.setSize(windowSize.x, -windowSize.y); // Flip Y-axis
   view.setCenter(0, windowSize.y / 2);
   window.setView(view);
 
   window.setVerticalSyncEnabled(false);
 
+  sf::Color darkGreen(3, 38, 7);
+
   // Disegna l'asse X (orizzontale)
   sf::RectangleShape xAxis(sf::Vector2f(
-      windowSize.x, 2));  // Linea orizzontale lunga quanto la finestra
-  xAxis.setFillColor(sf::Color::Red);  // Colore rosso per l'asse X
+      windowSize.x, 2));               // Linea orizzontale lunga quanto la finestra
+  xAxis.setFillColor(sf::Color::Blue); // Colore rosso per l'asse X
   xAxis.setPosition(
       -windowSize.x / 2,
-      windowSize.y / 2);  // Posiziona la linea al centro in altezza
+      windowSize.y / 2); // Posiziona la linea al centro in altezza
 
   // Disegna l'asse Y (verticale)
   sf::RectangleShape yAxis(sf::Vector2f(
-      2, windowSize.y));  // Linea verticale alta quanto la finestra
-  yAxis.setFillColor(sf::Color::Blue);  // Colore blu per l'asse Y
-  yAxis.setPosition(-windowSize.x / 2,
-                    0);  // Posiziona la linea lungo il bordo sinistro
+      2, windowSize.y));               // Linea verticale alta quanto la finestra
+  yAxis.setFillColor(sf::Color::Blue); // Colore blu per l'asse Y
+  yAxis.setPosition(billiard.PointsUp(windowSize)[0].x,
+                    0); // Posiziona la linea lungo il bordo sinistro
 
-  sf::Vertex lineUp[] = {
-      sf::Vertex(billiard.PointsUp(windowSize)[0], sf::Color::White),
-      sf::Vertex(billiard.PointsUp(windowSize)[1], sf::Color::White)};
+  /*sf::Vertex lineUp[] = {
+      sf::Vertex(billiard.PointsUp(windowSize)[0], sf::Color::Black),
+      sf::Vertex(billiard.PointsUp(windowSize)[1], sf::Color::Black)};
   sf::Vertex lineLow[] = {
-      sf::Vertex(billiard.PointsLow(windowSize)[0], sf::Color::Green),
-      sf::Vertex(billiard.PointsLow(windowSize)[1], sf::Color::Green)};
+      sf::Vertex(billiard.PointsLow(windowSize)[0], sf::Color::Black),
+      sf::Vertex(billiard.PointsLow(windowSize)[1], sf::Color::Black)};*/
+
+  // Define a thicker "line" by drawing multiple close vertices
+  sf::Vertex lineUp[] = {
+      sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, 2), sf::Color::Black), // Offset vertically to simulate thickness
+      sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, 2), sf::Color::Black),
+
+      sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, -2), sf::Color::Black), // Negative offset for the opposite side
+      sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, -2), sf::Color::Black)};
+
+  sf::Vertex lineLow[] = {
+      sf::Vertex(billiard.PointsLow(windowSize)[0] + sf::Vector2f(0, 2), sf::Color::Black),
+      sf::Vertex(billiard.PointsLow(windowSize)[1] + sf::Vector2f(0, 2), sf::Color::Black),
+
+      sf::Vertex(billiard.PointsLow(windowSize)[0] + sf::Vector2f(0, -2), sf::Color::Black),
+      sf::Vertex(billiard.PointsLow(windowSize)[1] + sf::Vector2f(0, -2), sf::Color::Black)};
 
   sf::CircleShape particleShape(5);
-  sf::Vector2f offset{-windowSize.x / 2.f, windowSize.y / 2.f};
+  sf::Vector2f offset{billiard.PointsUp(windowSize)[0].x, windowSize.y / 2.f};
   particleShape.setFillColor(sf::Color::Red);
+  particleShape.setOrigin(particleShape.getRadius(), particleShape.getRadius()); // Centering the circle
   sf::Clock clock;
-  //float deltaTime = clock.restart().asSeconds();
+  // float deltaTime = clock.restart().asSeconds();
   particleShape.setPosition(particle.getPosition() + offset);
-  
-  while (window.isOpen()) {
+
+  while (window.isOpen())
+  {
     sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) window.close();
+    while (window.pollEvent(event))
+    {
+      if (event.type == sf::Event::Closed)
+        window.close();
     }
     float deltaTime = clock.restart().asSeconds();
 
     // Muovi la particella all'interno del biliardo
 
-    if (particle.getPosition().x <= billiard.getLength()) {
-      
+    if (particle.getPosition().x <= billiard.getLength() && particle.getPosition().x >= 0)
+    {
+
       particle.move(billiard, deltaTime);
-      std::cout<<particle.getAngle()<<"  ";
-    particleShape.setPosition(particle.getPosition() + offset);
-    window.clear();
-    window.draw(xAxis);
-    window.draw(yAxis);
-    window.draw(lineUp, 2, sf::Lines);
-    window.draw(lineLow, 2, sf::Lines);
-    window.draw(particleShape);
-    window.display();
+      // std::cout<<particle.getAngle()<<"  ";
+      particleShape.setPosition(particle.getPosition() + offset);
+      window.clear(darkGreen); // Clear the window with dark green
+      window.draw(xAxis);
+      window.draw(yAxis);
+      // window.draw(lineUp, 2, sf::Lines);
+      // window.draw(lineLow, 2, sf::Lines);
+      window.draw(lineUp, 4, sf::Lines);
+      window.draw(lineLow, 4, sf::Lines);
+
+      window.draw(particleShape);
+      window.display();
+    }
   }
-  }
-  // Stampa lo stato finale della particella
   std::cout << "\nFinal state of the particle:\n";
   particle.print_state();
-
   return 0;
 }

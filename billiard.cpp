@@ -15,8 +15,10 @@ std::vector<sf::Vector2f> Billiard::lower_segment() const {
   return {{{0, -r1_}, {length_, -r2_}}};
 }
 
-float Billiard::upper_slope() const { return (r2_ - r1_) / length_; }
-float Billiard::lower_slope() const { return (-r2_ + r1_) / length_; }
+float Billiard::upper_slope() const { return ((r2_ - r1_) / length_); }
+float Billiard::lower_slope() const { return ((-r2_ + r1_) / length_); }
+float Billiard::upper_surface_intercept() const { return (r1_);}
+float Billiard::lower_surface_intercept() const { return (-r1_);}
 
 std::array<float, 2> Billiard::upper_normal() const {
   float norm_x = -(upper_slope());
