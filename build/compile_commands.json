@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/Users/olivieroferrante/biliardo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -isystem /usr/local/include  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -g -D_GLIBCXX_ASSERTIONS -fsanitize=address,undefined -fno-omit-frame-pointer -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -mmacosx-version-min=15.1 -o CMakeFiles/billiard.dir/main.cpp.o -c /Users/olivieroferrante/biliardo/main.cpp",
+  "file": "/Users/olivieroferrante/biliardo/main.cpp",
+  "output": "CMakeFiles/billiard.dir/main.cpp.o"
+},
+{
+  "directory": "/Users/olivieroferrante/biliardo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -isystem /usr/local/include  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -g -D_GLIBCXX_ASSERTIONS -fsanitize=address,undefined -fno-omit-frame-pointer -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -mmacosx-version-min=15.1 -o CMakeFiles/billiard.dir/billiard.cpp.o -c /Users/olivieroferrante/biliardo/billiard.cpp",
+  "file": "/Users/olivieroferrante/biliardo/billiard.cpp",
+  "output": "CMakeFiles/billiard.dir/billiard.cpp.o"
+},
+{
+  "directory": "/Users/olivieroferrante/biliardo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -isystem /usr/local/include  -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast -g -D_GLIBCXX_ASSERTIONS -fsanitize=address,undefined -fno-omit-frame-pointer -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -mmacosx-version-min=15.1 -o CMakeFiles/billiard.dir/particle.cpp.o -c /Users/olivieroferrante/biliardo/particle.cpp",
+  "file": "/Users/olivieroferrante/biliardo/particle.cpp",
+  "output": "CMakeFiles/billiard.dir/particle.cpp.o"
+}
+]
