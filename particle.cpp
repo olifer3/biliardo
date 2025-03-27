@@ -120,7 +120,7 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
         last_y = y;
       
       angle_ = -(angle_ -  2 * alpha);
-      std::cout<<"New angle = "<<angle_<<" ;  new (x,y) = ( "<<x<<" , "<<y<<" )\n";
+      std::cout<<"New angle = "<<angle_<<" ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
   }
   //position_.y > expected_y_lower && 
   if (y <= expected_y_lower) {
@@ -134,7 +134,7 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
       last_y = y;
     
     angle_ = -(angle_ -  2 * alpha);
-    std::cout<<"New angle = "<<angle_<<" ;  new (x,y) = ( "<<x<<" , "<<y<<" )\n";
+    std::cout<<"New angle = "<<angle_<<" ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
 }
 
   // Update the position of the particle

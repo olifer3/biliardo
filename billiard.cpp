@@ -7,39 +7,46 @@
 Billiard::Billiard(float length, float r1, float r2)
     : length_{length}, r1_{r1}, r2_{r2} {}
 
-std::vector<sf::Vector2f> Billiard::upper_segment() const {
-  return {{{0, r1_}, {length_, r2_}}};
+std::vector<sf::Vector2f> Billiard::upper_segment() const
+{
+  // return {{{0, r1_}, {length_, r2_}}};
+  return std::vector<sf::Vector2f>{
+      sf::Vector2f(0, r1_),
+      sf::Vector2f(length_, r2_)};
 }
 
-std::vector<sf::Vector2f> Billiard::lower_segment() const {
-  return {{{0, -r1_}, {length_, -r2_}}};
+std::vector<sf::Vector2f> Billiard::lower_segment() const
+{
+  // return {{{0, -r1_}, {length_, -r2_}}};
+  return std::vector<sf::Vector2f>{
+    sf::Vector2f(0, -r1_),
+    sf::Vector2f(length_, -r2_)};
 }
 
 float Billiard::upper_slope() const { return ((r2_ - r1_) / length_); }
 float Billiard::lower_slope() const { return ((-r2_ + r1_) / length_); }
-float Billiard::upper_surface_intercept() const { return (r1_);}
-float Billiard::lower_surface_intercept() const { return (-r1_);}
+float Billiard::upper_surface_intercept() const { return (r1_); }
+float Billiard::lower_surface_intercept() const { return (-r1_); }
 
-std::array<float, 2> Billiard::upper_normal() const {
+/*std::array<float, 2> Billiard::upper_normal() const {
   float norm_x = -(upper_slope());
   float norm_y = 1;
   float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
   return { norm_x / norm_lenght, norm_y / norm_lenght };
-}
+}*/
 
-std::array<float, 2> Billiard::lower_normal() const {
+/*std::array<float, 2> Billiard::lower_normal() const {
   float norm_x = -(lower_slope());
   float norm_y = 1;
   float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
   return { norm_x / norm_lenght, norm_y / norm_lenght };
-}
-void Billiard::print_info() /*const*/ {
+}*/
+void Billiard::print_info() /*const*/
+{
   std::cout << "Billiard properties:\n"
             << "Lenght =" << length_ << "\n"
             << " Left height = " << r1_ << "\n"
             << " Right height = " << r2_ << "\n"
             << " Upper wall slope = " << upper_slope() << "\n"
             << " Lower wall slope = " << lower_slope() << "\n";
-
-            
-            }
+}

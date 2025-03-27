@@ -22,15 +22,25 @@ class Billiard {
   float upper_surface_intercept() const;
   float lower_surface_intercept() const;
 
-  std::array<float, 2> upper_normal() const;
-  std::array<float, 2> lower_normal() const;
+  //std::array<float, 2> upper_normal() const;
+  //std::array<float, 2> lower_normal() const;
 
   std::vector<sf::Vector2f> PointsUp(sf::Vector2f windowSize) const {
-    return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, +r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, +r2_+windowSize.y/2}}};
+    //return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, +r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, +r2_+windowSize.y/2}}};
+    return std::vector<sf::Vector2f>{
+      sf::Vector2f((windowSize.x / 2 - length_ / 2) - windowSize.x / 2, +r1_ + windowSize.y / 2),
+      sf::Vector2f((windowSize.x / 2 + length_ / 2) - windowSize.x / 2, +r2_ + windowSize.y / 2)
+  };
+  
   }
 
   std::vector<sf::Vector2f> PointsLow(sf::Vector2f windowSize) const {
-    return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, -r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, -r2_+windowSize.y/2}}};
+    //return {{{(windowSize.x/2 - length_/2)-windowSize.x/2, -r1_+windowSize.y/2}, {(windowSize.x/2 + length_/2)-windowSize.x/2, -r2_+windowSize.y/2}}};
+    return std::vector<sf::Vector2f>{
+      sf::Vector2f((windowSize.x / 2 - length_ / 2) - windowSize.x / 2, -r1_ + windowSize.y / 2),
+      sf::Vector2f((windowSize.x / 2 + length_ / 2) - windowSize.x / 2, -r2_ + windowSize.y / 2)
+  };
+  
   }
  
   float getLength() const {return length_;}

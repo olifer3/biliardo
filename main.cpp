@@ -23,13 +23,13 @@ int main()
   // Print billiard properties
   billiard.print_info();
 
-  auto upper_norm = billiard.upper_normal();
+  /*auto upper_norm = billiard.upper_normal();
   auto lower_norm = billiard.lower_normal();
 
   std::cout << "Upper normal: (" << upper_norm[0] << ", " << upper_norm[1]
             << ")\n";
   std::cout << "Lower normal: (" << lower_norm[0] << ", " << lower_norm[1]
-            << ")\n";
+            << ")\n";*/
 
   // Chiedi i parametri della particella
   float y0, theta0, velocity;
