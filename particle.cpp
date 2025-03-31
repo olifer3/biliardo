@@ -31,7 +31,7 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
       billiard.lower_slope() * x + billiard.lower_segment()[0].y;
   if (y <= expected_y_lower&&angle_<0) {
     float alpha = static_cast<float>(atan(billiard.lower_slope()));
-    angle_ = +(abs(angle_) - 2.f * alpha);
+    angle_ = -(angle_- 2.f * alpha);
   }
   position_ = {x, y};
 }*/
