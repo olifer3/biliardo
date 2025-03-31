@@ -1,21 +1,42 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <utility>
+#include <limits>
+#include <cmath>
 
 #include "billiard.hpp"
 #include "particle.hpp"
 
+float getValidFloat(const std::string &prompt, float min, float max)
+{
+  float value;
+  while (true)
+  {
+    std::cout << prompt;
+    std::cin >> value;
+
+    if (std::cin.fail())
+    {                                                                     // Se l'input non è un numero
+      std::cin.clear();                                                   // Ripristina lo stato del flusso
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Scarta l'input errato
+      std::cout << "Error: it must be a valid number!\n";
+    }
+    else if (value < min || value > max)
+    { // Se il numero è fuori range
+      std::cout << "Error: the value must be between " << min << " and " << max << ".\n";
+    }
+    else
+    {
+      return value; // Input valido, esce dal ciclo
+    }
+  }
+}
+
 int main()
 {
-  float length, r1, r2;
-  std::cout << "Enter billiard length: ";
-  std::cin >> length;
-
-  std::cout << "Enter left height (r1): ";
-  std::cin >> r1;
-
-  std::cout << "Enter right height (r2): ";
-  std::cin >> r2;
+  float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
+  float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
+  float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
 
   // Create a Billiard object with user-defined parameters
   Billiard billiard(length, r1, r2);
@@ -32,22 +53,17 @@ int main()
             << ")\n";*/
 
   // Chiedi i parametri della particella
-  float y0, theta0, velocity;
-  std::cout << "Enter initial y position of particle: ";
-  std::cin >> y0;
-
-  std::cout << "Enter initial angle (in radians): ";
-  std::cin >> theta0;
-
-  std::cout << "Enter initial velocity: ";
-  std::cin >> velocity;
+    float y0 = getValidFloat("Enter initial y position of particle: ", -r1, r1);
+    float theta0_deg = getValidFloat("Enter initial angle (-90 - 90): ", -90, 90);
+    float theta0=(theta0_deg * static_cast<float>(M_PI)) / 180.0f;
+    float velocity = getValidFloat("Enter initial velocity: ", 0, 2000);
 
   // Crea la particella con i parametri inseriti
   Particle particle(y0, theta0, velocity);
 
   // Stampa lo stato iniziale della particella
   std::cout << "\nInitial state of the particle:\n";
-  particle.print_state();
+  particle.print_state(billiard);
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
   sf::Vector2f windowSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
@@ -137,6 +153,9 @@ int main()
     }
   }
   std::cout << "\nFinal state of the particle:\n";
-  particle.print_state();
+  particle.print_state(billiard);
+  //giusto per capire
+  std::cout << "\nFinal (not precise) state of the particle:\n";
+  particle.print_state_notprecise();
   return 0;
 }

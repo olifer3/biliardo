@@ -70,7 +70,8 @@
         float getAngle() const { return angle_; }
     
         // Print the particle's state (position and angle)
-        void print_state() const;
+        void print_state(const Billiard& billiard) const;
+        void print_state_notprecise() const;
     };
 
 #endif

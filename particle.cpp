@@ -121,7 +121,7 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
         last_y = y;
       
       angle_ = -(angle_ -  2 * alpha);
-      std::cout<<"New angle = "<<angle_<<" ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
+      std::cout<<"New angle = "<<((angle_*180.0f)/static_cast<float>(M_PI))<<"° ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
   }
   //position_.y > expected_y_lower && 
   if (y <= expected_y_lower) {
@@ -135,7 +135,7 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
       last_y = y;
     
     angle_ = -(angle_ -  2 * alpha);
-    std::cout<<"New angle = "<<angle_<<" ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
+    std::cout<<"New angle = "<<((angle_*180.0f)/static_cast<float>(M_PI))<<"° ;  (x,y) of impact = ( "<<x<<" , "<<y<<" )\n";
 }
 
   // Update the position of the particle
@@ -143,8 +143,28 @@ void Particle::move(const Billiard& billiard, float deltaTime) {
 }
 
 
-void Particle::print_state() const {
+void Particle::print_state(const Billiard& billiard) const {
+  float x;
+  float y;
+  if(position_.x<0){
+x=0;
+y=tan(angle_)*(x-last_x)+last_y;
+  }
+  else if (position_.x>=billiard.getLength()){
+    x=billiard.getLength();
+    y=tan(angle_)*(x-last_x)+last_y;
+  }
+  else {
+    x=position_.x;
+    y=position_.y;
+  }
+  std::cout << "Particle position: (" << x << ", " << y
+            << ")\n"
+            << "Direction (theta): " << ((angle_*180.0f)/static_cast<float>(M_PI)) << "°\n";
+}
+void Particle::print_state_notprecise() const {
+  
   std::cout << "Particle position: (" << position_.x << ", " << position_.y
             << ")\n"
-            << "Direction (theta): " << angle_ << " rad\n";
+            << "Direction (theta): " << ((angle_*180.0f)/static_cast<float>(M_PI)) << "°\n";
 }
