@@ -1,4 +1,5 @@
 #include "particle.hpp"
+
 #include <iostream>
 #include <cmath>
 
