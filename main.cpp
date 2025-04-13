@@ -6,6 +6,7 @@
 
 #include "billiard.hpp"
 #include "particle.hpp"
+#include "statistics.hpp"
 
 float getValidFloat(const std::string &prompt, float min, float max)
 {
@@ -36,7 +37,7 @@ int main()
 {
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
-  float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
+  float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300); 
 
   // Create a Billiard object with user-defined parameters
   Billiard billiard(length, r1, r2);
@@ -64,6 +65,22 @@ int main()
   // Stampa lo stato iniziale della particella
   std::cout << "\nInitial state of the particle:\n";
   particle.print_state(billiard);
+
+ // PARTE STATISTICA
+ std::cout << "\n--- Statistics Setup ---\n";
+
+ // 1. Lettura da tastiera dei parametri statistici
+ float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
+ float sigma_y0 = getValidFloat("Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1);
+
+ float mu_theta0 = getValidFloat("Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
+ float sigma_theta0 = getValidFloat("Enter stddev of theta0 in degrees (sigma_theta0): ", 0.0f, 90.0f);
+
+ int N = static_cast<int>(getValidFloat("How many particles to simulate? ", 1, 10000));
+
+ // 2. Chiamata alla funzione statistica vera e propria
+ run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0, velocity, billiard);
+ 
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
   sf::Vector2f windowSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
@@ -157,5 +174,9 @@ int main()
   //giusto per capire
   std::cout << "\nFinal (not precise) state of the particle:\n";
   particle.print_state_notprecise();
+ 
+  std::cout << "Fine programma - file salvati.\n"; //solo per testare se vengono salvati i file
+
   return 0;
+ 
 }
