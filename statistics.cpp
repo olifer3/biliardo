@@ -67,13 +67,13 @@ void run_statistics(
 
     for (int i = 0; i < N; ++i) {
         float y0 = dist_y0(gen);
-        if (y0 < -billiard.upper_surface_intercept() || y0 > billiard.upper_surface_intercept()) {
+        if (y0 < billiard.upper_surface_intercept() || y0 > billiard.lower_surface_intercept()) {
             --i;
             continue;
         }
 
         float theta0_deg = dist_theta0(gen);
-        if (theta0_deg <= -90.0f || theta0_deg >= 90.0f) {
+        if (theta0_deg >= -90.0f || theta0_deg <= 90.0f) {
             --i;
             continue;
         }
