@@ -8,29 +8,52 @@
 #include "billiard.hpp"
 #include "particle.hpp"
 #include "statistics.hpp"
+float getValidFloat(const std::string &prompt, float min, float max)
+{
+  float value;
+  while (true)
+  {
+    std::cout << prompt;
+    std::cin >> value;
 
-float getValidFloat(const std::string &prompt, float min, float max) {
+    if (std::cin.fail())
+    {                                                                     // Se l'input non è un numero
+      std::cin.clear();                                                   // Ripristina lo stato del flusso
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Scarta l'input errato
+      std::cout << "Error: it must be a valid number!\n";
+    }
+    else if (value < min || value > max)
+    { // Se il numero è fuori range
+      std::cout << "Error: the value must be between " << min << " and " << max << ".\n";
+    }
+    else
+    {
+      return value; // Input valido, esce dal ciclo
+    }
+  }
+}
+/*float getValidFloat(const std::string& prompt, float min, float max) {
   float value;
   std::string input;
   while (true) {
     std::cout << prompt;
-    std::getline(std::cin, input);  // Legge tutta la riga
-    std::stringstream ss(input);    // Crea un flusso dalla stringa
+    std::cin>>value;
+    std::stringstream ss=std::to_string(value);    // Crea un flusso dalla stringa
 
     if (ss >> value && ss.eof()) {  // Se parsing riuscito e non c'è altro dopo
       if (value > min && value < max) {
         return value;  // Input corretto e nel range
       } else {
-        std::cout << "Error: the value must be between " << min << " and " << max
-                  << ".\n";
+        std::cout << "Error: the value must be between " << min << " and "
+                  << max << ".\n";
       }
     } else {
       std::cout << "Error: you must insert only numbers.\n";
     }
   }
-}
+}*/
 
-int main() {
+void normal() {
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
   float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
@@ -39,16 +62,7 @@ int main() {
   Billiard billiard(length, r1, r2);
 
   // Print billiard properties
-  billiard.print_info();
-
-  /*auto upper_norm = billiard.upper_normal();
-  auto lower_norm = billiard.lower_normal();
-
-  std::cout << "Upper normal: (" << upper_norm[0] << ", " << upper_norm[1]
-            << ")\n";
-  std::cout << "Lower normal: (" << lower_norm[0] << ", " << lower_norm[1]
-            << ")\n";*/
-
+  // billiard.print_info();
   // Chiedi i parametri della particella
   float y0 = getValidFloat("Enter initial y position of particle: ", -r1, r1);
   float theta0_deg = getValidFloat("Enter initial angle (-90 - 90): ", -90, 90);
@@ -61,26 +75,6 @@ int main() {
   // Stampa lo stato iniziale della particella
   std::cout << "\nInitial state of the particle:\n";
   particle.print_state(billiard);
-
-  // PARTE STATISTICA
-  std::cout << "\n--- Statistics Setup ---\n";
-
-  // 1. Lettura da tastiera dei parametri statistici
-  float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
-  float sigma_y0 =
-      getValidFloat("Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1);
-
-  float mu_theta0 = getValidFloat(
-      "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
-  float sigma_theta0 = getValidFloat(
-      "Enter stddev of theta0 in degrees (sigma_theta0): ", 0.0f, 90.0f);
-
-  int N = static_cast<int>(
-      getValidFloat("How many particles to simulate? ", 1, 10000));
-
-  // 2. Chiamata alla funzione statistica vera e propria
-  run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0, velocity,
-                 billiard);
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "Biliardo Triangolare");
   sf::Vector2f windowSize(static_cast<float>(window.getSize().x),
@@ -109,13 +103,6 @@ int main() {
   yAxis.setFillColor(sf::Color::Blue);  // Colore blu per l'asse Y
   yAxis.setPosition(billiard.PointsUp(windowSize)[0].x,
                     0);  // Posiziona la linea lungo il bordo sinistro
-
-  /*sf::Vertex lineUp[] = {
-      sf::Vertex(billiard.PointsUp(windowSize)[0], sf::Color::Black),
-      sf::Vertex(billiard.PointsUp(windowSize)[1], sf::Color::Black)};
-  sf::Vertex lineLow[] = {
-      sf::Vertex(billiard.PointsLow(windowSize)[0], sf::Color::Black),
-      sf::Vertex(billiard.PointsLow(windowSize)[1], sf::Color::Black)};*/
 
   // Define a thicker "line" by drawing multiple close vertices
   sf::Vertex lineUp[] = {
@@ -183,6 +170,53 @@ int main() {
 
   std::cout << "Fine programma - file salvati.\n";  // solo per testare se
                                                     // vengono salvati i file
+}
 
+void statistics() {
+   // PARTE STATISTICA
+  float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
+  float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
+  float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
+
+  // Create a Billiard object with user-defined parameters
+  Billiard billiard(length, r1, r2);
+  
+  // 1. Lettura da tastiera dei parametri statistici
+  float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
+  float sigma_y0 =
+      getValidFloat("Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1-mu_y0);
+
+  float mu_theta0 = getValidFloat(
+      "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
+  float sigma_theta0 = getValidFloat(
+      "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f, 90.0f-mu_theta0);
+
+  
+  int N = static_cast<int>(
+      getValidFloat("How many particles to shoot? ", 1, 10000));
+
+  // 2. Chiamata alla funzione statistica vera e propria
+  run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0,
+                 billiard);
+  
+}
+
+int main() {
+  int scelta;
+
+  std::cout << "Choose game mode:\n";
+  std::cout << "1. Shoot one ball: insert 1\n";
+  std::cout << "2. Shoot N balls: insert 2\n";
+  std::cout << "Insert a number: ";
+
+  std::cin >> scelta;
+
+  if (scelta == 1) {
+    normal();
+  } else if (scelta == 2) {
+    statistics();
+  } else {
+    std::cout << "Scelta non valida. Esci dal programma.\n";
+  }
   return 0;
 }

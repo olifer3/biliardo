@@ -53,7 +53,6 @@ void run_statistics(
     float sigma_y0,
     float mu_theta0_deg,
     float sigma_theta0_deg,
-    float velocity,
     const Billiard& billiard
 ) {
     std::vector<float> y_finals;
@@ -65,15 +64,21 @@ void run_statistics(
     std::normal_distribution<float> dist_y0(mu_y0, sigma_y0);
     std::normal_distribution<float> dist_theta0(mu_theta0_deg, sigma_theta0_deg);
 
-    for (int i = 0; i < N; ++i) {
+    for (int i=0; i<N; ++i)
+    {
+        float y0=dist_y0(gen);
+        float theta0=dist_theta0(gen);
+    }
+
+    /*for (int i = 0; i < N; ++i) {
         float y0 = dist_y0(gen);
-        if (y0 < billiard.upper_surface_intercept() || y0 > billiard.lower_surface_intercept()) {
+        if (y0 > billiard.upper_surface_intercept() || y0 < billiard.lower_surface_intercept()) {
             --i;
             continue;
         }
 
         float theta0_deg = dist_theta0(gen);
-        if (theta0_deg >= -90.0f || theta0_deg <= 90.0f) {
+        if (theta0_deg <= -90.0f || theta0_deg >= 90.0f) {
             --i;
             continue;
         }
@@ -90,7 +95,7 @@ void run_statistics(
         sf::Vector2f pos = particle.getPosition();
         y_finals.push_back(pos.y);
         theta_finals.push_back(particle.getAngle() * 180.0f / static_cast<float>(M_PI));
-    }
+    }*/
 
     // Calcolo delle statistiche
     float my = mean(y_finals);
