@@ -8,7 +8,35 @@
 #include "billiard.hpp"
 #include "particle.hpp"
 #include "statistics.hpp"
-float getValidFloat(const std::string &prompt, float min, float max)
+
+float getValidFloat(const std::string& prompt, float min, float max) {
+  float value;
+  std::string input;
+
+  while (true) {
+    std::cout << prompt;
+    std::getline(std::cin, input);  // Legge tutta la riga
+
+    std::stringstream ss(input);
+    if (ss >> value) {
+      // Controlla che non ci siano caratteri residui
+      char c;
+      if (ss >> c) {
+        std::cout << "Error: you must insert only a number without extra "
+                     "characters.\n";
+      } else if (value < min || value > max) {
+        std::cout << "Error: the value must be between " << min << " and "
+                  << max << ".\n";
+      } else {
+        return value;
+      }
+    } else {
+      std::cout << "Error: invalid input, you must insert a number.\n";
+    }
+  }
+}
+
+/*float getValidFloat(const std::string &prompt, float min, float max)
 {
   float value;
   while (true)
@@ -17,41 +45,23 @@ float getValidFloat(const std::string &prompt, float min, float max)
     std::cin >> value;
 
     if (std::cin.fail())
-    {                                                                     // Se l'input non è un numero
-      std::cin.clear();                                                   // Ripristina lo stato del flusso
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Scarta l'input errato
-      std::cout << "Error: it must be a valid number!\n";
+    {                                                                     // Se
+l'input non è un numero std::cin.clear(); // Ripristina lo stato del flusso
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //
+Scarta l'input errato std::cout << "Error: it must be a valid number!\n";
     }
     else if (value < min || value > max)
     { // Se il numero è fuori range
-      std::cout << "Error: the value must be between " << min << " and " << max << ".\n";
+      std::cout << "Error: the value must be between " << min << " and " << max
+<< ".\n";
     }
     else
     {
       return value; // Input valido, esce dal ciclo
     }
   }
-}
-/*float getValidFloat(const std::string& prompt, float min, float max) {
-  float value;
-  std::string input;
-  while (true) {
-    std::cout << prompt;
-    std::cin>>value;
-    std::stringstream ss=std::to_string(value);    // Crea un flusso dalla stringa
-
-    if (ss >> value && ss.eof()) {  // Se parsing riuscito e non c'è altro dopo
-      if (value > min && value < max) {
-        return value;  // Input corretto e nel range
-      } else {
-        std::cout << "Error: the value must be between " << min << " and "
-                  << max << ".\n";
-      }
-    } else {
-      std::cout << "Error: you must insert only numbers.\n";
-    }
-  }
 }*/
+
 
 void normal() {
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
@@ -173,32 +183,30 @@ void normal() {
 }
 
 void statistics() {
-   // PARTE STATISTICA
+  // PARTE STATISTICA
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
   float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
 
   // Create a Billiard object with user-defined parameters
   Billiard billiard(length, r1, r2);
-  
+
   // 1. Lettura da tastiera dei parametri statistici
   float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
-  float sigma_y0 =
-      getValidFloat("Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1-mu_y0);
+  float sigma_y0 = getValidFloat(
+      "Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1 - mu_y0);
 
   float mu_theta0 = getValidFloat(
       "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
   float sigma_theta0 = getValidFloat(
-      "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f, 90.0f-mu_theta0);
+      "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f,
+      90.0f - mu_theta0);
 
-  
   int N = static_cast<int>(
       getValidFloat("How many particles to shoot? ", 1, 10000));
 
   // 2. Chiamata alla funzione statistica vera e propria
-  run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0,
-                 billiard);
-  
+  run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0, billiard);
 }
 
 int main() {
@@ -210,6 +218,7 @@ int main() {
   std::cout << "Insert a number: ";
 
   std::cin >> scelta;
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
   if (scelta == 1) {
     normal();
