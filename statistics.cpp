@@ -97,9 +97,10 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     } while (x0 <= billiard.getLength() && x0 >= 0);
     float theta0_deg = (180.f * theta0) / (M_PI);
     if (theta0_deg < 90 || theta0_deg > -90) {
-      y0 = tan(theta0) * billiard.getLength() + y0;
+      y0 = tan(theta0) * billiard.getLength() + y0; //Qui c'è errore
       y_finals.push_back(y0);
       theta_finals.push_back(theta0);
+      std::cout<<"Y finali: "<<y0<<"\n";
     }
   }
 
