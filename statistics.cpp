@@ -24,14 +24,14 @@ float stddev(const std::vector<float>& values, float mean_val) {
   }
   return std::sqrt(sum_sq / static_cast<float>(values.size()));
 }
-//skewness: simmetria
+// skewness: simmetria
 float skewness(const std::vector<float>& values, float mean_val,
                float std_val) {
   float skew_sum = 0.0f;
   for (float v : values) skew_sum += std::pow((v - mean_val) / std_val, 3);
   return skew_sum / static_cast<float>(values.size());
 }
-//kurtosis: appiattimento
+// kurtosis: appiattimento
 float kurtosis(const std::vector<float>& values, float mean_val,
                float std_val) {
   float kurt_sum = 0.0f;
@@ -55,6 +55,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   std::random_device rd;
   std::mt19937 gen(rd());
   std::normal_distribution<float> dist_y0(mu_y0, sigma_y0);
+
   std::normal_distribution<float> dist_theta0(mu_theta0, sigma_theta0);
 
   std::vector<float> y_finals;
@@ -63,6 +64,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   for (int i = 0; i < N; ++i) {
     float y0 = dist_y0(gen);
     float theta0 = dist_theta0(gen);
+    std::cout << "Pallina: " << i << "\n"
+              << (theta0 * 180.f) / (M_PI) << "    " << y0 << "\n";
     float x0 = 0;
     int r = 0;
     float x1 = (y0 - billiard.upper_surface_intercept()) /
@@ -71,23 +74,25 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
                (billiard.lower_slope() - tan(theta0));
     if (x1 > x2) {
       r = 1;
-      x0 == x1;
+      x0 = x1;
       y0 = tan(theta0) * x0 + y0;
       theta0 = -(theta0 - 2.f * atan(billiard.upper_slope()));
     } else {
       r = 2;
-      x0 == x2;
+      x0 = x2;
       y0 = tan(theta0) * x0 + y0;
       theta0 = -(theta0 - 2.f * atan(billiard.lower_slope()));
     }
 
     do {
-      x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
-            tan(theta0) * x0) /
-           (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
+      std::cout << (theta0 * 180.f) / (M_PI) << "   " << y0 << "\n ";
+          x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
+                tan(theta0) * x0) /
+               (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
       y0 = pow(-1, r) * billiard.upper_slope() * x0 +
            pow(-1, r) * billiard.upper_surface_intercept();
       theta0 = -(theta0 - 2.f * pow(-1, r) * atan(billiard.upper_slope()));
+
       r++;
     } while (x0 <= billiard.getLength() && x0 >= 0);
     float theta0_deg = (180.f * theta0) / (M_PI);
@@ -120,26 +125,21 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
             << ", Kurtosis = " << ku_t << "\n";
 
   // Salvataggio su file
-  //Vedere se mettere dentro funzione
+  // Vedere se mettere dentro funzione
   std::ofstream file1("theta_finals");
-  if (file1.is_open())
-  {
-    for (float v:theta_finals)
-    {
-        file1<<v<<"\n";
-        file1.close();
+  if (file1.is_open()) {
+    for (float v : theta_finals) {
+      file1 << v << "\n";
+      file1.close();
     }
   }
   std::ofstream file2("y_finals");
-  if (file2.is_open())
-  {
-    for (float v:y_finals)
-    {
-        file2<<v<<"\n";
-        file2.close();
+  if (file2.is_open()) {
+    for (float v : y_finals) {
+      file2 << v << "\n";
+      file2.close();
     }
   }
-  
-  std::cout
-      << "\nData saved to theta_finals.txt, y_finals.txt\n";
+
+  std::cout << "\nData saved to theta_finals.txt, y_finals.txt\n";
 }
