@@ -177,9 +177,6 @@ void normal() {
   // giusto per capire
   std::cout << "\nFinal (not precise) state of the particle:\n";
   particle.print_state_notprecise();
-
-  std::cout << "Fine programma - file salvati.\n";  // solo per testare se
-                                                    // vengono salvati i file
 }
 
 void statistics() {

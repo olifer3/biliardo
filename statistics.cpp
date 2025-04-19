@@ -64,8 +64,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   for (int i = 0; i < N; ++i) {
     float y0 = dist_y0(gen);
     float theta0 = dist_theta0(gen);
-    std::cout << "Pallina: " << i << "\n"
-              << (theta0 * 180.f) / (M_PI) << "    " << y0 << "\n";
+    std::cout << "Pallina: " << i+1 << "\n"
+              << "QUELLI GENERATI: theta= "<<(theta0 * 180.f) / (M_PI) << "   y= " << y0 << "\n";
     float x0 = 0;
     int r = 0;
     float x1 = (y0 - billiard.upper_surface_intercept()) /
@@ -85,7 +85,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     }
 
     do {
-      std::cout << (theta0 * 180.f) / (M_PI) << "   " << y0 << "\n ";
+      std::cout << "theta= "<<(theta0 * 180.f) / (M_PI) << "  y= " << y0 << "\n ";
           x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
                 tan(theta0) * x0) /
                (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
@@ -100,7 +100,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
       y0 = tan(theta0) * billiard.getLength() + y0; //Qui c'è errore
       y_finals.push_back(y0);
       theta_finals.push_back(theta0);
-      std::cout<<"Y finali: "<<y0<<"\n";
+      std::cout << "FINAL: theta= "<<(theta0 * 180.f) / (M_PI) << "  y= " << y0 << "\n ";
     }
   }
 
@@ -126,21 +126,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
             << ", Kurtosis = " << ku_t << "\n";
 
   // Salvataggio su file
-  // Vedere se mettere dentro funzione
-  std::ofstream file1("theta_finals");
-  if (file1.is_open()) {
-    for (float v : theta_finals) {
-      file1 << v << "\n";
-      file1.close();
-    }
-  }
-  std::ofstream file2("y_finals");
-  if (file2.is_open()) {
-    for (float v : y_finals) {
-      file2 << v << "\n";
-      file2.close();
-    }
-  }
+save_to_file("theta_finals", theta_finals);
+save_to_file("y_finals", y_finals);
 
   std::cout << "\nData saved to theta_finals.txt, y_finals.txt\n";
 }
