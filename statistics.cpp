@@ -1,125 +1,145 @@
 #include "statistics.hpp"
-#include "particle.hpp"
 
-#include <iostream>
-#include <fstream>
-#include <random>
 #include <cmath>
+#include <fstream>
+#include <iostream>
+#include <random>
 #include <string>
+
+#include "particle.hpp"
 
 // Funzioni statistiche
 float mean(const std::vector<float>& values) {
-    float sum = 0.0f;
-    for (float v : values) sum += v;
-    return sum / static_cast<float>(values.size());
+  float sum = 0.0f;
+  for (float v : values) {
+    sum = sum + v;
+  }
+  return sum / static_cast<float>(values.size());
 }
 
 float stddev(const std::vector<float>& values, float mean_val) {
-    float sum_sq = 0.0f;
-    for (float v : values)
-        sum_sq += (v - mean_val) * (v - mean_val);
-    return std::sqrt(sum_sq / static_cast<float>(values.size()));
+  float sum_sq = 0.0f;
+  for (float v : values) {
+    sum_sq += (v - mean_val) * (v - mean_val);
+  }
+  return std::sqrt(sum_sq / static_cast<float>(values.size()));
 }
-
-float skewness(const std::vector<float>& values, float mean_val, float std_val) {
-    float skew_sum = 0.0f;
-    for (float v : values)
-        skew_sum += std::pow((v - mean_val) / std_val, 3);
-    return skew_sum / static_cast<float>(values.size());
+//skewness: simmetria
+float skewness(const std::vector<float>& values, float mean_val,
+               float std_val) {
+  float skew_sum = 0.0f;
+  for (float v : values) skew_sum += std::pow((v - mean_val) / std_val, 3);
+  return skew_sum / static_cast<float>(values.size());
 }
-
-float kurtosis(const std::vector<float>& values, float mean_val, float std_val) {
-    float kurt_sum = 0.0f;
-    for (float v : values)
-        kurt_sum += std::pow((v - mean_val) / std_val, 4);
-    return kurt_sum / static_cast<float>(values.size());
+//kurtosis: appiattimento
+float kurtosis(const std::vector<float>& values, float mean_val,
+               float std_val) {
+  float kurt_sum = 0.0f;
+  for (float v : values) kurt_sum += std::pow((v - mean_val) / std_val, 4);
+  return kurt_sum / static_cast<float>(values.size());
 }
 
 // Salvataggio dei dati su file
 void save_to_file(const std::string& filename, const std::vector<float>& data) {
-    std::ofstream file(filename);
-    if (!file) {
-        std::cerr << "Error: cannot open file " << filename << " for writing.\n";
-        return;
-    }
-    for (float val : data)
-        file << val << '\n';
-    file.close();
+  std::ofstream file(filename);
+  if (!file) {
+    std::cerr << "Error: cannot open file " << filename << " for writing.\n";
+    return;
+  }
+  for (float val : data) file << val << '\n';
+  file.close();
 }
 
-void run_statistics(
-    int N,
-    float mu_y0,
-    float sigma_y0,
-    float mu_theta0_deg,
-    float sigma_theta0_deg,
-    const Billiard& billiard
-) {
-    std::vector<float> y_finals;
-    std::vector<float> theta_finals;
-    std::vector<float> theta_inputs;
+void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
+                    float sigma_theta0, const Billiard& billiard) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::normal_distribution<float> dist_y0(mu_y0, sigma_y0);
+  std::normal_distribution<float> dist_theta0(mu_theta0, sigma_theta0);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<float> dist_y0(mu_y0, sigma_y0);
-    std::normal_distribution<float> dist_theta0(mu_theta0_deg, sigma_theta0_deg);
+  std::vector<float> y_finals;
+  std::vector<float> theta_finals;
 
-    for (int i=0; i<N; ++i)
-    {
-        float y0=dist_y0(gen);
-        float theta0=dist_theta0(gen);
+  for (int i = 0; i < N; ++i) {
+    float y0 = dist_y0(gen);
+    float theta0 = dist_theta0(gen);
+    float x0 = 0;
+    int r = 0;
+    float x1 = (y0 - billiard.upper_surface_intercept()) /
+               (billiard.upper_slope() - tan(theta0));
+    float x2 = (y0 - billiard.lower_surface_intercept()) /
+               (billiard.lower_slope() - tan(theta0));
+    if (x1 > x2) {
+      r = 1;
+      x0 == x1;
+      y0 = tan(theta0) * x0 + y0;
+      theta0 = -(theta0 - 2.f * atan(billiard.upper_slope()));
+    } else {
+      r = 2;
+      x0 == x2;
+      y0 = tan(theta0) * x0 + y0;
+      theta0 = -(theta0 - 2.f * atan(billiard.lower_slope()));
     }
 
-    /*for (int i = 0; i < N; ++i) {
-        float y0 = dist_y0(gen);
-        if (y0 > billiard.upper_surface_intercept() || y0 < billiard.lower_surface_intercept()) {
-            --i;
-            continue;
-        }
+    do {
+      x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
+            tan(theta0) * x0) /
+           (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
+      y0 = pow(-1, r) * billiard.upper_slope() * x0 +
+           pow(-1, r) * billiard.upper_surface_intercept();
+      theta0 = -(theta0 - 2.f * pow(-1, r) * atan(billiard.upper_slope()));
+      r++;
+    } while (x0 <= billiard.getLength() && x0 >= 0);
+    float theta0_deg = (180.f * theta0) / (M_PI);
+    if (theta0_deg < 90 || theta0_deg > -90) {
+      y0 = tan(theta0) * billiard.getLength() + y0;
+      y_finals.push_back(y0);
+      theta_finals.push_back(theta0);
+    }
+  }
 
-        float theta0_deg = dist_theta0(gen);
-        if (theta0_deg <= -90.0f || theta0_deg >= 90.0f) {
-            --i;
-            continue;
-        }
+  // Calcolo delle statistiche
+  float my = mean(y_finals);
+  float sy = stddev(y_finals, my);
+  float sk_y = skewness(y_finals, my, sy);
+  float ku_y = kurtosis(y_finals, my, sy);
 
-        float theta0 = theta0_deg * static_cast<float>(M_PI) / 180.0f;
-        theta_inputs.push_back(theta0_deg);
+  float mt = mean(theta_finals);
+  float st = stddev(theta_finals, mt);
+  float sk_t = skewness(theta_finals, mt, st);
+  float ku_t = kurtosis(theta_finals, mt, st);
 
-        Particle particle(y0, theta0, velocity);
+  // Output delle statistiche
+  std::cout << "\n--- Final Statistics ---\n";
+  std::cout << "Final y:\n";
+  std::cout << "Mean = " << my << ", StdDev = " << sy << ", Skewness = " << sk_y
+            << ", Kurtosis = " << ku_y << "\n";
 
-        while (particle.getPosition().x >= 0 && particle.getPosition().x <= billiard.getLength()) {
-            particle.move(billiard, 0.01f);
-        }
+  std::cout << "Final theta:\n";
+  std::cout << "Mean = " << mt << ", StdDev = " << st << ", Skewness = " << sk_t
+            << ", Kurtosis = " << ku_t << "\n";
 
-        sf::Vector2f pos = particle.getPosition();
-        y_finals.push_back(pos.y);
-        theta_finals.push_back(particle.getAngle() * 180.0f / static_cast<float>(M_PI));
-    }*/
-
-    // Calcolo delle statistiche
-    float my = mean(y_finals);
-    float sy = stddev(y_finals, my);
-    float sk_y = skewness(y_finals, my, sy);
-    float ku_y = kurtosis(y_finals, my, sy);
-
-    float mt = mean(theta_finals);
-    float st = stddev(theta_finals, mt);
-    float sk_t = skewness(theta_finals, mt, st);
-    float ku_t = kurtosis(theta_finals, mt, st);
-
-    // Output delle statistiche
-    std::cout << "\n--- Final Statistics ---\n";
-    std::cout << "y_f (output position):\n";
-    std::cout << "Mean = " << my << ", StdDev = " << sy << ", Skewness = " << sk_y << ", Kurtosis = " << ku_y << "\n";
-
-    std::cout << "theta_f (output angle):\n";
-    std::cout << "Mean = " << mt << ", StdDev = " << st << ", Skewness = " << sk_t << ", Kurtosis = " << ku_t << "\n";
-
-    // Salvataggio su file
-    save_to_file("theta_input.txt", theta_inputs);
-    save_to_file("theta_output.txt", theta_finals);
-    save_to_file("y_output.txt", y_finals);
-
-    std::cout << "\nData saved to theta_input.txt, theta_output.txt, y_output.txt\n";
+  // Salvataggio su file
+  //Vedere se mettere dentro funzione
+  std::ofstream file1("theta_finals");
+  if (file1.is_open())
+  {
+    for (float v:theta_finals)
+    {
+        file1<<v<<"\n";
+        file1.close();
+    }
+  }
+  std::ofstream file2("y_finals");
+  if (file2.is_open())
+  {
+    for (float v:y_finals)
+    {
+        file2<<v<<"\n";
+        file2.close();
+    }
+  }
+  
+  std::cout
+      << "\nData saved to theta_finals.txt, y_finals.txt\n";
 }

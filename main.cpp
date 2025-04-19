@@ -196,11 +196,14 @@ void statistics() {
   float sigma_y0 = getValidFloat(
       "Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1 - mu_y0);
 
-  float mu_theta0 = getValidFloat(
+  float mu_theta0_deg = getValidFloat(
       "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
-  float sigma_theta0 = getValidFloat(
+  float mu_theta0= (M_PI*mu_theta0_deg)/180.f;
+  
+  float sigma_theta0_deg = getValidFloat(
       "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f,
-      90.0f - mu_theta0);
+      90.0f - mu_theta0_deg);
+  float sigma_theta0= (M_PI*sigma_theta0_deg)/180.f;
 
   int N = static_cast<int>(
       getValidFloat("How many particles to shoot? ", 1, 10000));
