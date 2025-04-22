@@ -64,8 +64,9 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   for (int i = 0; i < N; ++i) {
     float y0 = dist_y0(gen);
     float theta0 = dist_theta0(gen);
-    std::cout << "Pallina: " << i+1 << "\n"
-              << "QUELLI GENERATI: theta= "<<(theta0 * 180.f) / (M_PI) << "   y= " << y0 << "\n";
+    std::cout << "Pallina: " << i + 1 << "\n"
+              << "QUELLI GENERATI: theta= " << (theta0 * 180.f) / (M_PI)
+              << "   y= " << y0 << "\n";
     float x0 = 0;
     int r = 0;
     float x1 = (y0 - billiard.upper_surface_intercept()) /
@@ -83,25 +84,35 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
       y0 = tan(theta0) * x0 + y0;
       theta0 = -(theta0 - 2.f * atan(billiard.lower_slope()));
     }
-
+    
     do {
-      std::cout << "theta= "<<(theta0 * 180.f) / (M_PI) << "  y= " << y0 << "   x0= "<<x0<<"\n ";
-          x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
+      std::cout << "theta= " << (theta0 * 180.f) / (M_PI) << "  y= " << y0
+                << "   x0= " << x0 << "\n ";
+                float a=(((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
                 tan(theta0) * x0) /
                (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
-      y0 = pow(-1, r) * billiard.upper_slope() * x0 +
-           pow(-1, r) * billiard.upper_surface_intercept();
-      theta0 = -(theta0 - 2.f * pow(-1, r) * atan(billiard.upper_slope()));
+      if (a <= billiard.getLength() && a >= 0) {
+        x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
+              tan(theta0) * x0) /
+             (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
+        y0 = pow(-1, r) * billiard.upper_slope() * x0 +
+             pow(-1, r) * billiard.upper_surface_intercept();
+        theta0 = -(theta0 - 2.f * pow(-1, r) * atan(billiard.upper_slope()));
 
-      r++;
+        r++;
+      }
+      else {break;}
+
     } while (x0 <= billiard.getLength() && x0 >= 0);
     float theta0_deg = (180.f * theta0) / (M_PI);
-    if (theta0_deg < 90 || theta0_deg > -90) {
-      float y_final = tan(theta0) * (billiard.getLength()-x0) + y0; //Qui c'è errore
-      float x_final= (y_final-y0)/tan(theta0)+x0;
+    if (theta0_deg < 90 && theta0_deg > -90) {
+      float y_final =
+          tan(theta0) * (billiard.getLength() - x0) + y0;  // Qui c'è errore
+      float x_final = (y_final - y0) / tan(theta0) + x0;
       y_finals.push_back(y_final);
       theta_finals.push_back(theta0);
-      std::cout << "FINAL: theta= "<<(theta0 * 180.f) / (M_PI) << "  y= " << y_final << "   xfinal= "<<x_final<<"\n ";
+      std::cout << "FINAL: theta= " << (theta0 * 180.f) / (M_PI)
+                << "  y= " << y_final << "   xfinal= " << x_final << "\n ";
     }
   }
 
@@ -127,8 +138,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
             << ", Kurtosis = " << ku_t << "\n";
 
   // Salvataggio su file
-save_to_file("theta_finals", theta_finals);
-save_to_file("y_finals", y_finals);
+  save_to_file("theta_finals", theta_finals);
+  save_to_file("y_finals", y_finals);
 
   std::cout << "\nData saved to theta_finals.txt, y_finals.txt\n";
 }
