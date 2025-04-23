@@ -8,6 +8,93 @@
 
 #include "particle.hpp"
 
+#include <SFML/Graphics.hpp>
+#include <map>
+#include <algorithm>
+
+void show_histograms(const std::vector<float> &y_data, const std::vector<float> &theta_data)
+{
+  const int width = 800;
+  const int height = 600;
+  sf::RenderWindow window(sf::VideoMode(width, height), "Histograms");
+
+  // Set common parameters
+  const int bin_count = 30;
+  const int padding = 50;
+
+  auto create_histogram = [](const std::vector<float> &data, int bin_count, std::map<int, int> &histogram, float &min_val, float &max_val)
+  {
+    if (data.empty())
+      return;
+
+    min_val = *std::min_element(data.begin(), data.end());
+    max_val = *std::max_element(data.begin(), data.end());
+    float bin_size = (max_val - min_val) / bin_count;
+
+    for (float val : data)
+    {
+      int bin_index = std::min(static_cast<int>((val - min_val) / bin_size), bin_count - 1);
+      ++histogram[bin_index];
+    }
+  };
+
+  std::map<int, int> hist_y, hist_theta;
+  float min_y, max_y, min_theta, max_theta;
+  create_histogram(y_data, bin_count, hist_y, min_y, max_y);
+  create_histogram(theta_data, bin_count, hist_theta, min_theta, max_theta);
+
+  while (window.isOpen())
+  {
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+      if (event.type == sf::Event::Closed)
+        window.close();
+    }
+
+    window.clear(sf::Color::White);
+
+    // Draw histogram for y
+    int graph_height = height / 2 - padding * 2;
+    int graph_width = width - 2 * padding;
+    int max_count_y = std::max_element(hist_y.begin(), hist_y.end(),
+                                       [](const auto &a, const auto &b)
+                                       { return a.second < b.second; })
+                          ->second;
+
+    for (int i = 0; i < bin_count; ++i)
+    {
+      float bin_width = graph_width / static_cast<float>(bin_count);
+      float bin_height = (hist_y[i] / static_cast<float>(max_count_y)) * graph_height;
+
+      sf::RectangleShape bar(sf::Vector2f(bin_width - 2, bin_height));
+      bar.setFillColor(sf::Color::Blue);
+      bar.setPosition(padding + i * bin_width, padding + graph_height - bin_height);
+      window.draw(bar);
+    }
+
+    // Draw histogram for theta
+    int offset_y = height / 2;
+    int max_count_theta = std::max_element(hist_theta.begin(), hist_theta.end(),
+                                           [](const auto &a, const auto &b)
+                                           { return a.second < b.second; })
+                              ->second;
+
+    for (int i = 0; i < bin_count; ++i)
+    {
+      float bin_width = graph_width / static_cast<float>(bin_count);
+      float bin_height = (hist_theta[i] / static_cast<float>(max_count_theta)) * graph_height;
+
+      sf::RectangleShape bar(sf::Vector2f(bin_width - 2, bin_height));
+      bar.setFillColor(sf::Color::Red);
+      bar.setPosition(padding + i * bin_width, offset_y + padding + graph_height - bin_height);
+      window.draw(bar);
+    }
+
+    window.display();
+  }
+}
+
 // Funzioni statistiche
 float mean(const std::vector<float> &values)
 {
@@ -72,6 +159,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
 
   std::vector<float> y_finals;
   std::vector<float> theta_finals;
+  int discarded_generated_balls = 0;
+  int discarded_left_balls = 0;
 
   for (int i = 0; i < N; ++i)
   {
@@ -82,6 +171,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     {
       std::cout << "BALL N. " << i + 1 << " DISCARDED: y out of range, y = " << y0 << "\n"
                 << "\n";
+      ++discarded_generated_balls;
       continue; // Scarta il ciclo corrente
     }
 
@@ -91,6 +181,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     {
       std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range, theta = " << theta0_deg << "\n"
                 << "\n";
+      ++discarded_generated_balls;
       continue; // Scarta il ciclo corrente
     }
     std::cout << "BALL N. " << i + 1 << " SHOT\n"
@@ -144,7 +235,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     } while (x0 <= billiard.getLength() && x0 >= 0);
 
     float y_final =
-        tan(theta0) * (billiard.getLength() - x0) + y0; 
+        tan(theta0) * (billiard.getLength() - x0) + y0;
     if (theta0_deg < 90 && theta0_deg > -90 && y_final <= billiard.upper_right_height() && y_final >= billiard.lower_right_height())
     {
 
@@ -157,11 +248,26 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     else if (y_final > billiard.upper_right_height() || y_final < billiard.lower_right_height() || theta0_deg > 90 || theta0_deg < -90)
     {
       float y_left =
-        tan(theta0) * (0 - x0) + y0;
-        std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
+          tan(theta0) * (0 - x0) + y0;
+      std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
                 << "  y = " << y_left << "   x = " << 0 << "\n ";
       std::cout << "DISCARDED: DIDN'T GET OUT FROM THE RIGHT SIDE \n \n";
+      ++discarded_left_balls;
     }
+  }
+  if (discarded_generated_balls + discarded_left_balls != 0)
+  {
+    std::cout << "\n"
+              << discarded_generated_balls + discarded_left_balls << " BALLS OUT OF " << N
+              << " WERE DISCARDED:\n";
+  }
+  if (discarded_generated_balls != 0)
+  {
+    std::cout << discarded_generated_balls << " DISCARDED BECAUSE GENERATED OUT OF THE LIMITS"<<"\n ";
+  }
+  if (discarded_left_balls != 0)
+  {
+    std::cout << discarded_left_balls << " DISCARDED BECAUSE DIDN'T GET OUT FROM THE RIGHT SIDE\n";
   }
 
   // Calcolo delle statistiche
@@ -190,4 +296,5 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   save_to_file("y_finals", y_finals);
 
   std::cout << "\nData saved to theta_finals.txt, y_finals.txt\n";
+  // show_histograms(y_finals, theta_finals);
 }
