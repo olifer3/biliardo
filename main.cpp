@@ -93,7 +93,7 @@ void normal()
   // billiard.print_info();
   // Chiedi i parametri della particella
   float y0 = getValidFloat("Enter initial y position of particle: ", -r1, r1);
-  float theta0_deg = getValidFloat("Enter initial angle (-90 - 90): ", -90, 90);
+  float theta0_deg = getValidFloat("Enter initial angle (-90 < theta < 90): ", -89.9999, 89.9999);
   float theta0 = (theta0_deg * static_cast<float>(M_PI)) / 180.0f;
   float velocity = getValidFloat("Enter initial velocity: ", 0, 2000);
 

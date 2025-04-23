@@ -189,6 +189,20 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
               << "   y = " << y0 << "\n";
     float x0 = 0;
     int r = 0;
+    // Caso speciale: nessun rimbalzo, va direttamente alla destra
+    float y_direct = tan(theta0) * billiard.getLength() + y0;
+    if (y_direct <= billiard.upper_right_height() && y_direct >= billiard.lower_right_height())
+    {
+      y_finals.push_back(y_direct);
+      theta_finals.push_back(theta0);
+      std::cout << "BALL N. " << i + 1 << " SHOT\n"
+                << "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
+                << "   y = " << y0 << "\n";
+      std::cout << "NO BOUNCE - DIRECT TO EXIT: theta = " << (theta0 * 180.f) / M_PI
+                << "  y = " << y_direct << "   x = " << billiard.getLength() << "\n\n";
+      continue;
+    }
+
     float x1 = (y0 - billiard.upper_surface_intercept()) /
                (billiard.upper_slope() - tan(theta0));
     float x2 = (y0 - billiard.lower_surface_intercept()) /
@@ -263,7 +277,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   }
   if (discarded_generated_balls != 0)
   {
-    std::cout << discarded_generated_balls << " DISCARDED BECAUSE GENERATED OUT OF THE LIMITS"<<"\n ";
+    std::cout << discarded_generated_balls << " DISCARDED BECAUSE GENERATED OUT OF THE LIMITS" << "\n ";
   }
   if (discarded_left_balls != 0)
   {
