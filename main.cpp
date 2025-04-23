@@ -9,30 +9,74 @@
 #include "particle.hpp"
 #include "statistics.hpp"
 
-float getValidFloat(const std::string& prompt, float min, float max) {
+float getValidFloat(const std::string &prompt, float min, float max)
+{
   float value;
   std::string input;
 
-  while (true) {
+  while (true)
+  {
     std::cout << prompt;
-    std::getline(std::cin, input);  // Legge tutta la riga
+    std::getline(std::cin, input); // Legge tutta la riga
 
     std::stringstream ss(input);
-    if (ss >> value) {
+    if (ss >> value)
+    {
       // Controlla che non ci siano caratteri residui
       char c;
-      if (ss >> c) {
+      if (ss >> c)
+      {
         std::cout << "Error: you must insert only a number without extra "
                      "characters.\n";
-      } else if (value < min || value > max) {
+      }
+      else if (value < min || value > max)
+      {
         std::cout << "Error: the value must be between " << min << " and "
                   << max << ".\n";
-      } else {
+      }
+      else
+      {
         return value;
       }
-    } else {
+    }
+    else
+    {
       std::cout << "Error: invalid input, you must insert a number.\n";
     }
+  }
+}
+
+float getSigmaWithWarning(const std::string &prompt, float mu, float min_val, float max_val, float critical_threshold)
+{
+  while (true)
+  {
+    float sigma = getValidFloat(prompt, 0.0f, max_val);
+
+    // Calcolo distanza minima dai bordi
+    float max_sigma = std::min(max_val - mu, max_val + mu);
+    if (max_sigma < 0.f)
+    {
+      max_sigma = 0.f;
+    }
+    // Se la sigma è molto grande rispetto all’intervallo utile
+    if (sigma > critical_threshold * max_sigma)
+    {
+      std::cout << "WARNING: the standard deviation is quite large compared to the allowed range.\n"
+                << "Many particles may be discarded. Do you want to proceed anyway? (y/n): ";
+      std::string response;
+      std::getline(std::cin, response);
+      if (response == "y" || response == "Y")
+      {
+        return sigma;
+      }
+      else
+      {
+        std::cout << "Please enter a new value for the standard deviation.\n";
+        continue;
+      }
+    }
+
+    return sigma;
   }
 }
 
@@ -62,8 +106,8 @@ Scarta l'input errato std::cout << "Error: it must be a valid number!\n";
   }
 }*/
 
-
-void normal() {
+void normal()
+{
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
   float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
@@ -91,7 +135,7 @@ void normal() {
                           static_cast<float>(window.getSize().y));
   sf::View view;
   // view.setSize(windowSize);
-  view.setSize(windowSize.x, -windowSize.y);  // Flip Y-axis
+  view.setSize(windowSize.x, -windowSize.y); // Flip Y-axis
   view.setCenter(0, windowSize.y / 2);
   window.setView(view);
 
@@ -101,28 +145,28 @@ void normal() {
 
   // Disegna l'asse X (orizzontale)
   sf::RectangleShape xAxis(sf::Vector2f(
-      windowSize.x, 2));  // Linea orizzontale lunga quanto la finestra
-  xAxis.setFillColor(sf::Color::Blue);  // Colore rosso per l'asse X
+      windowSize.x, 2));               // Linea orizzontale lunga quanto la finestra
+  xAxis.setFillColor(sf::Color::Blue); // Colore rosso per l'asse X
   xAxis.setPosition(
       -windowSize.x / 2,
-      windowSize.y / 2);  // Posiziona la linea al centro in altezza
+      windowSize.y / 2); // Posiziona la linea al centro in altezza
 
   // Disegna l'asse Y (verticale)
   sf::RectangleShape yAxis(sf::Vector2f(
-      2, windowSize.y));  // Linea verticale alta quanto la finestra
-  yAxis.setFillColor(sf::Color::Blue);  // Colore blu per l'asse Y
+      2, windowSize.y));               // Linea verticale alta quanto la finestra
+  yAxis.setFillColor(sf::Color::Blue); // Colore blu per l'asse Y
   yAxis.setPosition(billiard.PointsUp(windowSize)[0].x,
-                    0);  // Posiziona la linea lungo il bordo sinistro
+                    0); // Posiziona la linea lungo il bordo sinistro
 
   // Define a thicker "line" by drawing multiple close vertices
   sf::Vertex lineUp[] = {
       sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, 2),
-                 sf::Color::Black),  // Offset vertically to simulate thickness
+                 sf::Color::Black), // Offset vertically to simulate thickness
       sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, 2),
                  sf::Color::Black),
 
       sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, -2),
-                 sf::Color::Black),  // Negative offset for the opposite side
+                 sf::Color::Black), // Negative offset for the opposite side
       sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, -2),
                  sf::Color::Black)};
 
@@ -141,26 +185,30 @@ void normal() {
   sf::Vector2f offset{billiard.PointsUp(windowSize)[0].x, windowSize.y / 2.f};
   particleShape.setFillColor(sf::Color::Red);
   particleShape.setOrigin(particleShape.getRadius(),
-                          particleShape.getRadius());  // Centering the circle
+                          particleShape.getRadius()); // Centering the circle
   sf::Clock clock;
   // float deltaTime = clock.restart().asSeconds();
   particleShape.setPosition(particle.getPosition() + offset);
 
-  while (window.isOpen()) {
+  while (window.isOpen())
+  {
     sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) window.close();
+    while (window.pollEvent(event))
+    {
+      if (event.type == sf::Event::Closed)
+        window.close();
     }
     float deltaTime = clock.restart().asSeconds();
 
     // Muovi la particella all'interno del biliardo
 
     if (particle.getPosition().x <= billiard.getLength() &&
-        particle.getPosition().x >= 0) {
+        particle.getPosition().x >= 0)
+    {
       particle.move(billiard, deltaTime);
       // std::cout<<particle.getAngle()<<"  ";
       particleShape.setPosition(particle.getPosition() + offset);
-      window.clear(darkGreen);  // Clear the window with dark green
+      window.clear(darkGreen); // Clear the window with dark green
       window.draw(xAxis);
       window.draw(yAxis);
       // window.draw(lineUp, 2, sf::Lines);
@@ -179,7 +227,8 @@ void normal() {
   particle.print_state_notprecise();
 }
 
-void statistics() {
+void statistics()
+{
   // PARTE STATISTICA
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
@@ -190,17 +239,25 @@ void statistics() {
 
   // 1. Lettura da tastiera dei parametri statistici
   float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
-  float sigma_y0 = getValidFloat(
-      "Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1 - mu_y0);
+  /*float sigma_y0 = getValidFloat(
+      "Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1 - mu_y0);*/
+  float sigma_y0 = getSigmaWithWarning(
+      "Enter standard deviation of y0 (sigma_y0): ",
+      mu_y0, -r1, r1, 0.7f // 70% del massimo range utile, soglia di warning
+  );
 
   float mu_theta0_deg = getValidFloat(
       "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
-  float mu_theta0= (M_PI*mu_theta0_deg)/180.f;
-  
-  float sigma_theta0_deg = getValidFloat(
+  float mu_theta0 = (M_PI * mu_theta0_deg) / 180.f;
+
+  /*float sigma_theta0_deg = getValidFloat(
       "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f,
       90.0f - mu_theta0_deg);
-  float sigma_theta0= (M_PI*sigma_theta0_deg)/180.f;
+  float sigma_theta0 = (M_PI * sigma_theta0_deg) / 180.f;*/
+  float sigma_theta0_deg = getSigmaWithWarning(
+      "Enter standard deviation of theta0 in degrees (sigma_theta0): ",
+      mu_theta0_deg, -90.f, 90.f, 0.7f);
+  float sigma_theta0 = (M_PI * sigma_theta0_deg) / 180.f;
 
   int N = static_cast<int>(
       getValidFloat("How many particles to shoot? ", 1, 10000));
@@ -209,7 +266,8 @@ void statistics() {
   run_statistics(N, mu_y0, sigma_y0, mu_theta0, sigma_theta0, billiard);
 }
 
-int main() {
+int main()
+{
   int scelta;
 
   std::cout << "Choose game mode:\n";
@@ -220,11 +278,16 @@ int main() {
   std::cin >> scelta;
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-  if (scelta == 1) {
+  if (scelta == 1)
+  {
     normal();
-  } else if (scelta == 2) {
+  }
+  else if (scelta == 2)
+  {
     statistics();
-  } else {
+  }
+  else
+  {
     std::cout << "Scelta non valida. Esci dal programma.\n";
   }
   return 0;

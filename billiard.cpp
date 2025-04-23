@@ -27,6 +27,8 @@ float Billiard::upper_slope() const { return ((r2_ - r1_) / length_); }
 float Billiard::lower_slope() const { return ((-r2_ + r1_) / length_); }
 float Billiard::upper_surface_intercept() const { return (r1_); }
 float Billiard::lower_surface_intercept() const { return (-r1_); }
+float Billiard::upper_right_height() const { return (r2_); }
+float Billiard::lower_right_height() const { return (-r2_); }
 
 /*std::array<float, 2> Billiard::upper_normal() const {
   float norm_x = -(upper_slope());

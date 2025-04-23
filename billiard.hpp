@@ -21,6 +21,8 @@ class Billiard {
   //float left_height_() const;
   float upper_surface_intercept() const;
   float lower_surface_intercept() const;
+  float upper_right_height() const;
+  float lower_right_height() const;
 
   //std::array<float, 2> upper_normal() const;
   //std::array<float, 2> lower_normal() const;
