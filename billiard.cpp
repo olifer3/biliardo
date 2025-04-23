@@ -30,19 +30,6 @@ float Billiard::lower_surface_intercept() const { return (-r1_); }
 float Billiard::upper_right_height() const { return (r2_); }
 float Billiard::lower_right_height() const { return (-r2_); }
 
-/*std::array<float, 2> Billiard::upper_normal() const {
-  float norm_x = -(upper_slope());
-  float norm_y = 1;
-  float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
-  return { norm_x / norm_lenght, norm_y / norm_lenght };
-}*/
-
-/*std::array<float, 2> Billiard::lower_normal() const {
-  float norm_x = -(lower_slope());
-  float norm_y = 1;
-  float norm_lenght = std::sqrt(norm_x * norm_x + norm_y * norm_y);
-  return { norm_x / norm_lenght, norm_y / norm_lenght };
-}*/
 void Billiard::print_info() /*const*/
 {
   std::cout << "Billiard properties:\n"

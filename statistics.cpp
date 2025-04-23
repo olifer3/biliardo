@@ -142,9 +142,9 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
       }
 
     } while (x0 <= billiard.getLength() && x0 >= 0);
-    // float theta0_deg = (180.f * theta0) / (M_PI);
+
     float y_final =
-        tan(theta0) * (billiard.getLength() - x0) + y0; // Qui c'è errore
+        tan(theta0) * (billiard.getLength() - x0) + y0; 
     if (theta0_deg < 90 && theta0_deg > -90 && y_final <= billiard.upper_right_height() && y_final >= billiard.lower_right_height())
     {
 

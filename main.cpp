@@ -80,32 +80,6 @@ float getSigmaWithWarning(const std::string &prompt, float mu, float min_val, fl
   }
 }
 
-/*float getValidFloat(const std::string &prompt, float min, float max)
-{
-  float value;
-  while (true)
-  {
-    std::cout << prompt;
-    std::cin >> value;
-
-    if (std::cin.fail())
-    {                                                                     // Se
-l'input non è un numero std::cin.clear(); // Ripristina lo stato del flusso
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //
-Scarta l'input errato std::cout << "Error: it must be a valid number!\n";
-    }
-    else if (value < min || value > max)
-    { // Se il numero è fuori range
-      std::cout << "Error: the value must be between " << min << " and " << max
-<< ".\n";
-    }
-    else
-    {
-      return value; // Input valido, esce dal ciclo
-    }
-  }
-}*/
-
 void normal()
 {
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
@@ -239,8 +213,7 @@ void statistics()
 
   // 1. Lettura da tastiera dei parametri statistici
   float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
-  /*float sigma_y0 = getValidFloat(
-      "Enter standard deviation of y0 (sigma_y0): ", 0.0f, r1 - mu_y0);*/
+  
   float sigma_y0 = getSigmaWithWarning(
       "Enter standard deviation of y0 (sigma_y0): ",
       mu_y0, -r1, r1, 0.7f // 70% del massimo range utile, soglia di warning
@@ -250,10 +223,7 @@ void statistics()
       "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
   float mu_theta0 = (M_PI * mu_theta0_deg) / 180.f;
 
-  /*float sigma_theta0_deg = getValidFloat(
-      "Enter standard deviation of theta0 in degrees (sigma_theta0): ", 0.0f,
-      90.0f - mu_theta0_deg);
-  float sigma_theta0 = (M_PI * sigma_theta0_deg) / 180.f;*/
+  
   float sigma_theta0_deg = getSigmaWithWarning(
       "Enter standard deviation of theta0 in degrees (sigma_theta0): ",
       mu_theta0_deg, -90.f, 90.f, 0.7f);
