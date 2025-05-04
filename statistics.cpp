@@ -121,7 +121,7 @@ float skewness(const std::vector<float> &values, float mean_val,
 {
   float skew_sum = 0.0f;
   for (float v : values)
-    skew_sum += std::pow((v - mean_val) / std_val, 3);
+    skew_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 3));
   return skew_sum / static_cast<float>(values.size());
 }
 // kurtosis: appiattimento
@@ -130,7 +130,7 @@ float kurtosis(const std::vector<float> &values, float mean_val,
 {
   float kurt_sum = 0.0f;
   for (float v : values)
-    kurt_sum += std::pow((v - mean_val) / std_val, 4);
+    kurt_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 4));
   return kurt_sum / static_cast<float>(values.size());
 }
 
@@ -176,7 +176,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     }
 
     // Controllo che theta sia tra -90° e 90°
-    float theta0_deg = (theta0 * 180.f) / M_PI;
+    float theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
     if (theta0_deg > 90.f || theta0_deg < -90.f)
     {
       std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range, theta = " << theta0_deg << "\n"
@@ -227,17 +227,17 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
       std::cout << "theta = " << (theta0 * 180.f) / (M_PI) << "  y = " << y0
                 << "   x0 = " << x0 << "\n ";
       float a = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
-                 tan(theta0) * x0) /
+                 (static_cast<float>(tan(theta0)) * x0)) /
                 (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
       if (a <= billiard.getLength() && a >= 0)
       {
         x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
-              tan(theta0) * x0) /
+        (static_cast<float>(tan(theta0)) * x0)) /
              (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
-        y0 = pow(-1, r) * billiard.upper_slope() * x0 +
-             pow(-1, r) * billiard.upper_surface_intercept();
-        theta0 = -(theta0 - 2.f * pow(-1, r) * atan(billiard.upper_slope()));
-        theta0_deg = (theta0 * 180.f) / M_PI;
+        y0 = static_cast<float>(pow(-1, r)) * billiard.upper_slope() * x0 +
+        static_cast<float>(pow(-1, r)) * billiard.upper_surface_intercept();
+        theta0 = -(theta0 - 2.f * static_cast<float>(pow(-1, r)) * atan(billiard.upper_slope()));
+        theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
 
         r++;
       }

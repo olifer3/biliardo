@@ -93,7 +93,7 @@ void normal()
   // billiard.print_info();
   // Chiedi i parametri della particella
   float y0 = getValidFloat("Enter initial y position of particle: ", -r1, r1);
-  float theta0_deg = getValidFloat("Enter initial angle (-90 < theta < 90): ", -89.9999, 89.9999);
+  float theta0_deg = getValidFloat("Enter initial angle (-90 < theta < 90): ", static_cast<float>(-89.9999), static_cast<float>(89.9999));
   float theta0 = (theta0_deg * static_cast<float>(M_PI)) / 180.0f;
   float velocity = getValidFloat("Enter initial velocity: ", 0, 2000);
 
@@ -221,13 +221,13 @@ void statistics()
 
   float mu_theta0_deg = getValidFloat(
       "Enter mean of theta0 in degrees (mu_theta0): ", -90.0f, 90.0f);
-  float mu_theta0 = (M_PI * mu_theta0_deg) / 180.f;
+  float mu_theta0 = (static_cast<float>(M_PI) * mu_theta0_deg) / 180.f;
 
   
   float sigma_theta0_deg = getSigmaWithWarning(
       "Enter standard deviation of theta0 in degrees (sigma_theta0): ",
       mu_theta0_deg, -90.f, 90.f, 0.7f);
-  float sigma_theta0 = (M_PI * sigma_theta0_deg) / 180.f;
+  float sigma_theta0 = (static_cast<float>(M_PI) * sigma_theta0_deg) / 180.f;
 
   int N = static_cast<int>(
       getValidFloat("How many particles to shoot? ", 1, 10000));
