@@ -23,6 +23,7 @@ class Billiard {
   float upper_right_height() const;
   float lower_right_height() const;
 
+
   std::vector<sf::Vector2f> PointsUp(sf::Vector2f windowSize) const {
     return std::vector<sf::Vector2f>{
       sf::Vector2f((windowSize.x / 2 - length_ / 2) - windowSize.x / 2, +r1_ + windowSize.y / 2),
@@ -38,6 +39,8 @@ class Billiard {
   };
   
   }
+
+  sf::VertexArray createThickLine(sf::Vector2f p0, sf::Vector2f p1, float thickness, sf::Color color) const;
  
   float getLength() const {return length_;}
   void print_info() /*const*/;

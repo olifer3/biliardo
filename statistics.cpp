@@ -121,7 +121,7 @@ float skewness(const std::vector<float> &values, float mean_val,
 {
   float skew_sum = 0.0f;
   for (float v : values)
-    skew_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 3));
+    skew_sum += static_cast<float>(std::powf((v - mean_val) / std_val, 3));
   return skew_sum / static_cast<float>(values.size());
 }
 // kurtosis: appiattimento
@@ -130,7 +130,7 @@ float kurtosis(const std::vector<float> &values, float mean_val,
 {
   float kurt_sum = 0.0f;
   for (float v : values)
-    kurt_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 4));
+    kurt_sum += static_cast<float>(std::powf((v - mean_val) / std_val, 4));
   return kurt_sum / static_cast<float>(values.size());
 }
 
@@ -226,17 +226,17 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     {
       std::cout << "theta = " << (theta0 * 180.f) / (M_PI) << "  y = " << y0
                 << "   x0 = " << x0 << "\n ";
-      float a = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
-                 (static_cast<float>(tan(theta0)) * x0)) /
-                (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
+      float a = (((powf(-1, static_cast<float>(r))) * billiard.upper_surface_intercept()) - y0 +
+                 tanf(theta0) * x0) /
+                (tanf(theta0) + (powf(static_cast<float>(-1), static_cast<float>(r + 1))) * billiard.upper_slope());
       if (a <= billiard.getLength() && a >= 0)
       {
-        x0 = (((pow(-1, r)) * billiard.upper_surface_intercept()) - y0 +
-        (static_cast<float>(tan(theta0)) * x0)) /
-             (tan(theta0) + (pow(-1, r + 1)) * billiard.upper_slope());
-        y0 = static_cast<float>(pow(-1, r)) * billiard.upper_slope() * x0 +
-        static_cast<float>(pow(-1, r)) * billiard.upper_surface_intercept();
-        theta0 = -(theta0 - 2.f * static_cast<float>(pow(-1, r)) * atan(billiard.upper_slope()));
+        x0 = (powf(-1, static_cast<float>(r)))* billiard.upper_surface_intercept() - y0 +
+        (tanf(theta0)) * x0 /
+             (tanf(theta0) + (powf(-1, static_cast<float>(r + 1))) * billiard.upper_slope());
+        y0 =(powf(-1, static_cast<float>(r)))* billiard.upper_slope() * x0 +
+        powf(-1,static_cast<float>(r)) * billiard.upper_surface_intercept();
+        theta0 = -(theta0 - 2.f * (powf(-1, static_cast<float>(r))) * atanf(billiard.upper_slope()));
         theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
 
         r++;
@@ -249,11 +249,11 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     } while (x0 <= billiard.getLength() && x0 >= 0);
 
     float y_final =
-        tan(theta0) * (billiard.getLength() - x0) + y0;
+        tanf(theta0) * (billiard.getLength() - x0) + y0;
     if (theta0_deg < 90 && theta0_deg > -90 && y_final <= billiard.upper_right_height() && y_final >= billiard.lower_right_height())
     {
 
-      float x_final = (y_final - y0) / tan(theta0) + x0;
+      float x_final = (y_final - y0) / tanf(theta0) + x0;
       y_finals.push_back(y_final);
       theta_finals.push_back(theta0);
       std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
@@ -262,7 +262,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     else if (y_final > billiard.upper_right_height() || y_final < billiard.lower_right_height() || theta0_deg > 90 || theta0_deg < -90)
     {
       float y_left =
-          tan(theta0) * (0 - x0) + y0;
+          tanf(theta0) * (0 - x0) + y0;
       std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
                 << "  y = " << y_left << "   x = " << 0 << "\n ";
       std::cout << "DISCARDED: DIDN'T GET OUT FROM THE RIGHT SIDE \n \n";

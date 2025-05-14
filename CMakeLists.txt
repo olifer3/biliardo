@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(progettopf VERSION 0.1.0)
 
+
+
 # abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
 include(CTest)
 
@@ -24,8 +26,13 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-o
 #   le dipendenze vengono identificate automaticamente
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
+
+
 add_executable(billiard main.cpp billiard.cpp particle.cpp statistics.cpp) #ho aggiunto file statistics.cpp
 target_link_libraries(billiard  PRIVATE sfml-graphics)
+
+# Specifica le directory di inclusione per il target
+target_include_directories(billiard PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/SelbaWard)
 
 # se il testing e' abilitato...
 #   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione

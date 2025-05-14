@@ -114,50 +114,45 @@ void normal()
   window.setView(view);
 
   window.setVerticalSyncEnabled(false);
-
+  
+  // Definisco i Colori
   sf::Color darkGreen(3, 99, 14);
+  sf::Color darkRed(153, 9, 19);
+  sf::Color Brown(56, 25, 2);
 
   // Disegna l'asse X (orizzontale)
   sf::RectangleShape xAxis(sf::Vector2f(
-      windowSize.x, 2));               // Linea orizzontale lunga quanto la finestra
-  xAxis.setFillColor(sf::Color::Blue); // Colore rosso per l'asse X
+      windowSize.x, 1));               // Linea orizzontale lunga quanto la finestra
+  xAxis.setFillColor(sf::Color::White); // Colore bianco per l'asse X
   xAxis.setPosition(
       -windowSize.x / 2,
       windowSize.y / 2); // Posiziona la linea al centro in altezza
 
   // Disegna l'asse Y (verticale)
   sf::RectangleShape yAxis(sf::Vector2f(
-      2, windowSize.y));               // Linea verticale alta quanto la finestra
-  yAxis.setFillColor(sf::Color::Blue); // Colore blu per l'asse Y
+      1, windowSize.y));               // Linea verticale alta quanto la finestra
+  yAxis.setFillColor(sf::Color::White); // Colore bianco per l'asse Y
   yAxis.setPosition(billiard.PointsUp(windowSize)[0].x,
                     0); // Posiziona la linea lungo il bordo sinistro
 
-  // Define a thicker "line" by drawing multiple close vertices
-  sf::Vertex lineUp[] = {
-      sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, 2),
-                 sf::Color::Black), // Offset vertically to simulate thickness
-      sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, 2),
-                 sf::Color::Black),
+  
+                    float thickness = 4.f;
 
-      sf::Vertex(billiard.PointsUp(windowSize)[0] + sf::Vector2f(0, -2),
-                 sf::Color::Black), // Negative offset for the opposite side
-      sf::Vertex(billiard.PointsUp(windowSize)[1] + sf::Vector2f(0, -2),
-                 sf::Color::Black)};
+                    // Prendi i punti delle due linee (up e low)
+                    sf::Vector2f up0 = billiard.PointsUp(windowSize)[0];
+                    sf::Vector2f up1 = billiard.PointsUp(windowSize)[1];
+                    sf::Vector2f low0 = billiard.PointsLow(windowSize)[0];
+                    sf::Vector2f low1 = billiard.PointsLow(windowSize)[1];
+                    
+                    // Crea i rettangoli
+                    sf::VertexArray rectUp = billiard.createThickLine(up0, up1, thickness, Brown);
+                    sf::VertexArray rectLow = billiard.createThickLine(low0, low1, thickness, Brown);
 
-  sf::Vertex lineLow[] = {
-      sf::Vertex(billiard.PointsLow(windowSize)[0] + sf::Vector2f(0, 2),
-                 sf::Color::Black),
-      sf::Vertex(billiard.PointsLow(windowSize)[1] + sf::Vector2f(0, 2),
-                 sf::Color::Black),
+                 
 
-      sf::Vertex(billiard.PointsLow(windowSize)[0] + sf::Vector2f(0, -2),
-                 sf::Color::Black),
-      sf::Vertex(billiard.PointsLow(windowSize)[1] + sf::Vector2f(0, -2),
-                 sf::Color::Black)};
-
-  sf::CircleShape particleShape(5);
+  sf::CircleShape particleShape(7);
   sf::Vector2f offset{billiard.PointsUp(windowSize)[0].x, windowSize.y / 2.f};
-  particleShape.setFillColor(sf::Color::Red);
+  particleShape.setFillColor(darkRed);
   particleShape.setOrigin(particleShape.getRadius(),
                           particleShape.getRadius()); // Centering the circle
   sf::Clock clock;
@@ -185,10 +180,12 @@ void normal()
       window.clear(darkGreen); // Clear the window with dark green
       window.draw(xAxis);
       window.draw(yAxis);
+      window.draw(rectUp);
+      window.draw(rectLow);
       // window.draw(lineUp, 2, sf::Lines);
       // window.draw(lineLow, 2, sf::Lines);
-      window.draw(lineUp, 4, sf::Lines);
-      window.draw(lineLow, 4, sf::Lines);
+      //window.draw(lineUp, 4, sf::Lines);
+      //window.draw(lineLow, 4, sf::Lines);
 
       window.draw(particleShape);
       window.display();
