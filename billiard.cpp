@@ -51,7 +51,7 @@ sf::VertexArray Billiard::createThickLine(sf::Vector2f p0, sf::Vector2f p1, floa
   quad[4].position = v2;
   quad[5].position = v3;
 
-  for (int i = 0; i < 6; ++i)
+  for (std::size_t i = 0; i < 6; ++i)
       quad[i].color = color;
 
   return quad;

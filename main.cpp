@@ -46,7 +46,7 @@ float getValidFloat(const std::string &prompt, float min, float max)
   }
 }
 
-float getSigmaWithWarning(const std::string &prompt, float mu, float min_val, float max_val, float critical_threshold)
+float getSigmaWithWarning(const std::string &prompt, float mu, float max_val, float critical_threshold)
 {
   while (true)
   {
@@ -194,8 +194,8 @@ void normal()
   std::cout << "\nFinal state of the particle:\n";
   particle.print_state(billiard);
   // giusto per capire
-  std::cout << "\nFinal (not precise) state of the particle:\n";
-  particle.print_state_notprecise();
+  /*std::cout << "\nFinal (not precise) state of the particle:\n";
+  particle.print_state_notprecise();*/
 }
 
 void statistics()
@@ -205,15 +205,15 @@ void statistics()
   float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
   float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
 
-  // Create a Billiard object with user-defined parameters
+  
   Billiard billiard(length, r1, r2);
 
-  // 1. Lettura da tastiera dei parametri statistici
+  // 1. Lettura dei parametri statistici
   float mu_y0 = getValidFloat("Enter mean of y0 (mu_y0): ", -r1, r1);
   
   float sigma_y0 = getSigmaWithWarning(
       "Enter standard deviation of y0 (sigma_y0): ",
-      mu_y0, -r1, r1, 0.7f // 70% del massimo range utile, soglia di warning
+      mu_y0, r1, 0.7f // 70% del massimo range utile, soglia di warning
   );
 
   float mu_theta0_deg = getValidFloat(
@@ -223,7 +223,7 @@ void statistics()
   
   float sigma_theta0_deg = getSigmaWithWarning(
       "Enter standard deviation of theta0 in degrees (sigma_theta0): ",
-      mu_theta0_deg, -90.f, 90.f, 0.7f);
+      mu_theta0_deg, 90.f, 0.7f);
   float sigma_theta0 = (static_cast<float>(M_PI) * sigma_theta0_deg) / 180.f;
 
   int N = static_cast<int>(

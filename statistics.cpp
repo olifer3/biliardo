@@ -12,88 +12,7 @@
 #include <map>
 #include <algorithm>
 
-void show_histograms(const std::vector<float> &y_data, const std::vector<float> &theta_data)
-{
-  const int width = 800;
-  const int height = 600;
-  sf::RenderWindow window(sf::VideoMode(width, height), "Histograms");
 
-  // Set common parameters
-  const int bin_count = 30;
-  const int padding = 50;
-
-  auto create_histogram = [](const std::vector<float> &data, int bin_count, std::map<int, int> &histogram, float &min_val, float &max_val)
-  {
-    if (data.empty())
-      return;
-
-    min_val = *std::min_element(data.begin(), data.end());
-    max_val = *std::max_element(data.begin(), data.end());
-    float bin_size = (max_val - min_val) / bin_count;
-
-    for (float val : data)
-    {
-      int bin_index = std::min(static_cast<int>((val - min_val) / bin_size), bin_count - 1);
-      ++histogram[bin_index];
-    }
-  };
-
-  std::map<int, int> hist_y, hist_theta;
-  float min_y, max_y, min_theta, max_theta;
-  create_histogram(y_data, bin_count, hist_y, min_y, max_y);
-  create_histogram(theta_data, bin_count, hist_theta, min_theta, max_theta);
-
-  while (window.isOpen())
-  {
-    sf::Event event;
-    while (window.pollEvent(event))
-    {
-      if (event.type == sf::Event::Closed)
-        window.close();
-    }
-
-    window.clear(sf::Color::White);
-
-    // Draw histogram for y
-    int graph_height = height / 2 - padding * 2;
-    int graph_width = width - 2 * padding;
-    int max_count_y = std::max_element(hist_y.begin(), hist_y.end(),
-                                       [](const auto &a, const auto &b)
-                                       { return a.second < b.second; })
-                          ->second;
-
-    for (int i = 0; i < bin_count; ++i)
-    {
-      float bin_width = graph_width / static_cast<float>(bin_count);
-      float bin_height = (hist_y[i] / static_cast<float>(max_count_y)) * graph_height;
-
-      sf::RectangleShape bar(sf::Vector2f(bin_width - 2, bin_height));
-      bar.setFillColor(sf::Color::Blue);
-      bar.setPosition(padding + i * bin_width, padding + graph_height - bin_height);
-      window.draw(bar);
-    }
-
-    // Draw histogram for theta
-    int offset_y = height / 2;
-    int max_count_theta = std::max_element(hist_theta.begin(), hist_theta.end(),
-                                           [](const auto &a, const auto &b)
-                                           { return a.second < b.second; })
-                              ->second;
-
-    for (int i = 0; i < bin_count; ++i)
-    {
-      float bin_width = graph_width / static_cast<float>(bin_count);
-      float bin_height = (hist_theta[i] / static_cast<float>(max_count_theta)) * graph_height;
-
-      sf::RectangleShape bar(sf::Vector2f(bin_width - 2, bin_height));
-      bar.setFillColor(sf::Color::Red);
-      bar.setPosition(padding + i * bin_width, offset_y + padding + graph_height - bin_height);
-      window.draw(bar);
-    }
-
-    window.display();
-  }
-}
 
 // Funzioni statistiche
 float mean(const std::vector<float> &values)
@@ -169,8 +88,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     // Controllo che y0 sia tra upper e lower surface intercept
     if (y0 > billiard.upper_surface_intercept() || y0 < billiard.lower_surface_intercept())
     {
-      std::cout << "BALL N. " << i + 1 << " DISCARDED: y out of range, y = " << y0 << "\n"
-                << "\n";
+      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: y out of range, y = " << y0 << "\n"
+                << "\n";*/
       ++discarded_generated_balls;
       continue; // Scarta il ciclo corrente
     }
@@ -179,14 +98,14 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     float theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
     if (theta0_deg > 90.f || theta0_deg < -90.f)
     {
-      std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range, theta = " << theta0_deg << "\n"
-                << "\n";
+      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range, theta = " << theta0_deg << "\n"
+                 << "\n";*/
       ++discarded_generated_balls;
       continue; // Scarta il ciclo corrente
     }
-    //std::cout << "BALL N. " << i + 1 << " SHOT\n"
-              //<< "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
-              //<< "   y = " << y0 << "\n";
+    /*std::cout << "BALL N. " << i + 1 << " SHOT\n"
+              << "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
+              << "   y = " << y0 << "\n";*/
     float x0 = 0;
     int r = 0;
     // Caso speciale: nessun rimbalzo, va direttamente alla destra
@@ -195,11 +114,11 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     {
       y_finals.push_back(y_direct);
       theta_finals.push_back(theta0);
-      //std::cout << "BALL N. " << i + 1 << " SHOT\n"
-                //<< "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
-                //<< "   y = " << y0 << "\n";
-      //std::cout << "NO BOUNCE - DIRECT TO EXIT: theta = " << (theta0 * 180.f) / M_PI
-                //<< "  y = " << y_direct << "   x = " << billiard.getLength() << "\n\n";
+      /*std::cout << "BALL N. " << i + 1 << " SHOT\n"
+                << "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
+                << "   y = " << y0 << "\n";
+      std::cout << "NO BOUNCE - DIRECT TO EXIT: theta = " << (theta0 * 180.f) / M_PI
+                << "  y = " << y_direct << "   x = " << billiard.getLength() << "\n\n";*/
       continue;
     }
 
@@ -224,15 +143,15 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
 
     do
     {
-      //std::cout << "theta = " << (theta0 * 180.f) / (M_PI) << "  y = " << y0
-                //<< "   x0 = " << x0 << "\n ";
+      /*std::cout << "theta = " << (theta0 * 180.f) / (M_PI) << "  y = " << y0
+                << "   x0 = " << x0 << "\n ";*/
       float a = (((powf(-1, static_cast<float>(r))) * billiard.upper_surface_intercept()) - y0 +
                  tanf(theta0) * x0) /
                 (tanf(theta0) + (powf(static_cast<float>(-1), static_cast<float>(r + 1))) * billiard.upper_slope());
       if (a <= billiard.getLength() && a >= 0)
       {
-        x0 = (powf(-1, static_cast<float>(r)))* billiard.upper_surface_intercept() - y0 +
-        (tanf(theta0)) * x0 /
+        x0 = ((powf(-1, static_cast<float>(r)))* billiard.upper_surface_intercept() - y0 +
+        (tanf(theta0)) * x0 )/
              (tanf(theta0) + (powf(-1, static_cast<float>(r + 1))) * billiard.upper_slope());
         y0 =(powf(-1, static_cast<float>(r)))* billiard.upper_slope() * x0 +
         powf(-1,static_cast<float>(r)) * billiard.upper_surface_intercept();
@@ -253,7 +172,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     if (theta0_deg < 90 && theta0_deg > -90 && y_final <= billiard.upper_right_height() && y_final >= billiard.lower_right_height())
     {
 
-      float x_final = (y_final - y0) / tanf(theta0) + x0;
+      //float x_final = (y_final - y0) / tanf(theta0) + x0;
       y_finals.push_back(y_final);
       theta_finals.push_back(theta0);
       /*std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
@@ -261,11 +180,10 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     }
     else if (y_final > billiard.upper_right_height() || y_final < billiard.lower_right_height() || theta0_deg > 90 || theta0_deg < -90)
     {
-      float y_left =
-          tanf(theta0) * (0 - x0) + y0;
-      //std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
-                //<< "  y = " << y_left << "   x = " << 0 << "\n ";
-      //std::cout << "DISCARDED: DIDN'T GET OUT FROM THE RIGHT SIDE \n \n";
+      //float y_left =tanf(theta0) * (0 - x0) + y0;
+      /*std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
+                << "  y = " << y_left << "   x = " << 0 << "\n ";
+      std::cout << "DISCARDED: DIDN'T GET OUT FROM THE RIGHT SIDE \n \n";*/
       ++discarded_left_balls;
     }
   }
@@ -302,7 +220,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
             << ", Kurtosis = " << ku_y << "\n";
 
   std::cout << "Final theta:\n";
-  std::cout << "Mean = " << mt << ", StdDev = " << st << ", Skewness = " << sk_t
+  std::cout << "Mean = " << (mt*180.f)/M_PI << ", StdDev = " << (st*180.f)/M_PI << ", Skewness = " << sk_t
             << ", Kurtosis = " << ku_t << "\n";
 
   // Salvataggio su file
