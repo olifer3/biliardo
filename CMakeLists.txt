@@ -38,9 +38,16 @@ target_include_directories(billiard PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external
 #   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione
 if (BUILD_TESTING)
 
-  # aggiungi l'eseguibile all.t
-  # add_executable(all.t all.t.cpp complex.t.cpp)
-  # aggiungi l'eseguibile all.t alla lista dei test
-  # add_test(NAME all.t COMMAND all.t)
+  add_executable(billiard_tests
+    billiard.test.cpp
+    billiard.cpp
+    particle.cpp
+    statistics.cpp
+    input.cpp
+  )
+  target_link_libraries(billiard_tests PRIVATE sfml-graphics)
+  target_include_directories(billiard_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/SelbaWard)
+
+  add_test(NAME billiard_tests COMMAND billiard_tests)
 
 endif()

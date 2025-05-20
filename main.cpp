@@ -15,8 +15,8 @@
 void normal()
 {
   float length = getValidFloat("Enter billiard length (0 - 800): ", 0, 800);
-  float r1 = getValidFloat("Enter left height (0 - 300): ", 0, 300);
-  float r2 = getValidFloat("Enter right height (0 - 300): ", 0, 300);
+  float r1 = getValidFloat("Enter left height (0 - 300): ", 0.001f, 300);
+  float r2 = getValidFloat("Enter right height (0 - 300): ", 0.001f, 300);
 
   // Create a Billiard object with user-defined parameters
   Billiard billiard(length, r1, r2);
