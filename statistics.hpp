@@ -23,6 +23,6 @@ void save_to_file(
 void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0_deg,
                     float sigma_theta0_deg, const Billiard &billiard);
 
-void show_histograms(const std::vector<float> &y_data, const std::vector<float> &theta_data);
+
 
 #endif

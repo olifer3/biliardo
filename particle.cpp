@@ -72,9 +72,4 @@ y=tan(angle_)*(x-last_x)+last_y;
             << ")\n"
             << "Direction (theta): " << ((angle_*180.0f)/static_cast<float>(M_PI)) << "°\n";
 }
-void Particle::print_state_notprecise() const {
-  
-  std::cout << "Particle position: (" << position_.x << ", " << position_.y
-            << ")\n"
-            << "Direction (theta): " << ((angle_*180.0f)/static_cast<float>(M_PI)) << "°\n";
-}
+

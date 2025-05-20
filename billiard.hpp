@@ -13,8 +13,6 @@ class Billiard {
  public:
   Billiard(float length, float r1, float r2);
 
-  std::vector<sf::Vector2f> upper_segment() const;
-  std::vector<sf::Vector2f> lower_segment() const;
 
   float upper_slope() const;
   float lower_slope() const;
@@ -43,7 +41,7 @@ class Billiard {
   sf::VertexArray createThickLine(sf::Vector2f p0, sf::Vector2f p1, float thickness, sf::Color color) const;
  
   float getLength() const {return length_;}
-  void print_info() /*const*/;
+  
 };
 
 #endif

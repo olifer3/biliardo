@@ -28,7 +28,7 @@ find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
 
 
-add_executable(billiard main.cpp billiard.cpp particle.cpp statistics.cpp) #ho aggiunto file statistics.cpp
+add_executable(billiard main.cpp billiard.cpp particle.cpp statistics.cpp input.cpp) #ho aggiunto file statistics.cpp
 target_link_libraries(billiard  PRIVATE sfml-graphics)
 
 # Specifica le directory di inclusione per il target
