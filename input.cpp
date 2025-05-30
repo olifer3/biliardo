@@ -1,5 +1,4 @@
 #include "input.hpp"
-
 #include <sstream>
 
 float getValidFloat(const std::string &prompt, float min, float max)
