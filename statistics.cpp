@@ -8,9 +8,6 @@
 
 #include "particle.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <map>
-#include <algorithm>
 
 
 
@@ -40,7 +37,7 @@ float skewness(const std::vector<float> &values, float mean_val,
 {
   float skew_sum = 0.0f;
   for (float v : values)
-    skew_sum += static_cast<float>(std::powf((v - mean_val) / std_val, 3));
+    skew_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 3));
   return skew_sum / static_cast<float>(values.size());
 }
 // kurtosis: appiattimento
@@ -49,7 +46,7 @@ float kurtosis(const std::vector<float> &values, float mean_val,
 {
   float kurt_sum = 0.0f;
   for (float v : values)
-    kurt_sum += static_cast<float>(std::powf((v - mean_val) / std_val, 4));
+    kurt_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 4));
   return kurt_sum / static_cast<float>(values.size());
 }
 
@@ -109,7 +106,7 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     float x0 = 0;
     int r = 0;
     // Caso speciale: nessun rimbalzo, va direttamente alla destra
-    float y_direct = tan(theta0) * billiard.getLength() + y0;
+    float y_direct = static_cast<float>(tan(theta0)) * billiard.getLength() + y0;
     if (y_direct <= billiard.upper_right_height() && y_direct >= billiard.lower_right_height())
     {
       y_finals.push_back(y_direct);
@@ -123,21 +120,21 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     }
 
     float x1 = (y0 - billiard.upper_surface_intercept()) /
-               (billiard.upper_slope() - tan(theta0));
+               (billiard.upper_slope() - static_cast<float>((theta0)));
     float x2 = (y0 - billiard.lower_surface_intercept()) /
-               (billiard.lower_slope() - tan(theta0));
+               (billiard.lower_slope() - static_cast<float>(tan(theta0)));
     if (x1 > x2)
     {
       r = 1;
       x0 = x1;
-      y0 = tan(theta0) * x0 + y0;
-      theta0 = -(theta0 - 2.f * atan(billiard.upper_slope()));
+      y0 = static_cast<float>(tan(theta0)) * x0 + y0;
+      theta0 = -(theta0 - 2.f * static_cast<float>(atan(billiard.upper_slope())));
     }
     else
     {
       r = 2;
       x0 = x2;
-      y0 = tan(theta0) * x0 + y0;
+      y0 = static_cast<float>(tan(theta0)) * x0 + y0;
       theta0 = -(theta0 - 2.f * atan(billiard.lower_slope()));
     }
 

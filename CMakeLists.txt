@@ -26,7 +26,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-o
 #   le dipendenze vengono identificate automaticamente
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-
+enable_testing()
 
 add_executable(billiard main.cpp billiard.cpp particle.cpp statistics.cpp input.cpp) #ho aggiunto file statistics.cpp
 target_link_libraries(billiard  PRIVATE sfml-graphics)
