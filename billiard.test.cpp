@@ -1,55 +1,4 @@
-/*#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
 
-#include "billiard.hpp"
-#include "particle.hpp"
-#include "statistics.hpp"
-#include <cmath>
-
-TEST_CASE("Billiard initialization and geometry")
-{
-  Billiard b{100.f, 50.f, 30.f};
-  CHECK(b.getLength() == doctest::Approx(100.f));
-  CHECK(b.upper_slope() == doctest::Approx((30.f - 50.f) / 100.f));
-  CHECK(b.lower_slope() == doctest::Approx((-30.f + 50.f) / 100.f));
-}
-
-TEST_CASE("Particle bounce logic - simple upper bounce")
-{
-  Billiard b{100.f, 50.f, 50.f};
-  Particle p{45.f, static_cast<float>(M_PI) / 4, 100.f}; // verso l'alto
-  p.move(b, 0.1f);
-  CHECK(p.getPosition().x > 0.f);
-}
-
-TEST_CASE("Particle bounce logic - extreme lower bounce")
-{
-  Billiard b{200.f, 60.f, 60.f};
-  Particle p{-55.f, static_cast<float>(-M_PI) / 4, 150.f};
-  p.move(b, 0.1f);
-  CHECK(p.getPosition().x > 0.f);
-}
-
-TEST_CASE("Statistical simulation - check bounds")
-{
-  Billiard b{400.f, 100.f, 50.f};
-  CHECK_NOTHROW(run_statistics(10, 0.f, 10.f, 0.f, 0.1f, b));
-}
-
-TEST_CASE("Statistics functions compute correct results on known data")
-{
-  std::vector<float> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-
-  float m = mean(data);
-  float s = stddev(data, m);
-  float sk = skewness(data, m, s);
-  float ku = kurtosis(data, m, s);
-
-  CHECK(m == doctest::Approx(3.0f));
-  CHECK(s == doctest::Approx(std::sqrt(2.0f)));     // stddev = sqrt(2)
-  CHECK(sk == doctest::Approx(0.0f));               // simmetrica
-  CHECK(ku == doctest::Approx(1.7f).epsilon(0.01)); // ≈ 1.7 con tolleranza
-}*/
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "billiard.hpp"
@@ -69,14 +18,14 @@ TEST_CASE("Billiard initialization and geometry") {
   CHECK(b.lower_slope() == doctest::Approx((-30.f + 50.f) / 100.f));
 }
 
-TEST_CASE("Particle bounce logic - simple upper bounce") {
+TEST_CASE("Particle bounce logic - upper move") {
   Billiard b{100.f, 50.f, 50.f};
   Particle p{45.f, static_cast<float>(M_PI) / 4, 100.f};  // verso l'alto
   p.move(b, 0.1f);
   CHECK(p.getPosition().x > 0.f);
 }
 
-TEST_CASE("Particle bounce logic - extreme lower bounce") {
+TEST_CASE("Particle bounce logic - lower move") {
   Billiard b{200.f, 60.f, 60.f};
   Particle p{-55.f, static_cast<float>(-M_PI) / 4, 150.f};
   p.move(b, 0.1f);
@@ -101,7 +50,7 @@ TEST_CASE("Statistics functions compute correct results on known data") {
   CHECK(sk == doctest::Approx(0.0f));                // simmetrica
   CHECK(ku == doctest::Approx(1.7f).epsilon(0.01));  // ≈ 1.7 con tolleranza
 }
-TEST_CASE("Due rimbalzi + uscita a sinistra  (confronto con Desmos)") {
+TEST_CASE("Two bounces with positive angle + exit on the left") {
   Billiard billiard(10.f, 8.f, 4.f);
   float theta0_rad = 0.6f;
   Particle p(1.4f, theta0_rad, 5.f);
@@ -140,7 +89,7 @@ TEST_CASE("Due rimbalzi + uscita a sinistra  (confronto con Desmos)") {
   CHECK(final_pos.y == doctest::Approx(7.58684f).epsilon(0.002));
 }
 
-TEST_CASE("due rimbalzi (bordo sotto) + uscita a sinistra  (valori Desmos)") {
+TEST_CASE("tTwo bounces with negative angle + exit on the left") {
   Billiard billiard(10.f, 10.f, 6.f);
   float theta0_rad = -0.5f;
   Particle p(2.f, theta0_rad, 5.f);
@@ -179,7 +128,7 @@ TEST_CASE("due rimbalzi (bordo sotto) + uscita a sinistra  (valori Desmos)") {
   CHECK(final_pos.y == doctest::Approx(-1.55643f).epsilon(0.002));
 }
 
-TEST_CASE("Salvataggio file statistici – verifica esistenza e righe") {
+TEST_CASE("Check saving files – check files existence and number of lines") {
   // 1. Setup: definisco un biliardo e parametri stretti per avere poche
   // particelle valide
   Billiard billiard(20.f, 5.f, 5.f);
@@ -216,7 +165,7 @@ TEST_CASE("Salvataggio file statistici – verifica esistenza e righe") {
   std::remove("y_finals");
 }
 
-TEST_CASE("Uscita a destra senza rimbalzi – traiettoria quasi diretta") {
+TEST_CASE("Exit on the right, no bounces") {
   Billiard billiard(10.f, 5.f, 5.f);  // Pareti parallele: y = ±5
   float theta0_rad = 0.2f;            // ≈ 11.5°
   float y0 = 0.f;
@@ -238,7 +187,7 @@ TEST_CASE("Uscita a destra senza rimbalzi – traiettoria quasi diretta") {
                            .epsilon(0.01));  // tolleranza più larga dovuta ad
                                              // accumuli numerici di deltaTime
 }
-TEST_CASE("Uscita a destra con θ = 0 – orizzontale") {
+TEST_CASE("Exit on the right with θ = 0") {
   Billiard billiard(10.f, 5.f, 5.f);  // pareti parallele
   float theta0_rad = 0.f;
   float y0 = 0.f;
