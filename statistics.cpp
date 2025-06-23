@@ -8,33 +8,25 @@
 
 #include "particle.hpp"
 
-
-
-
 // Funzioni statistiche
-float mean(const std::vector<float> &values)
-{
+float mean(const std::vector<float> &values) {
   float sum = 0.0f;
-  for (float v : values)
-  {
+  for (float v : values) {
     sum = sum + v;
   }
   return sum / static_cast<float>(values.size());
 }
 
-float stddev(const std::vector<float> &values, float mean_val)
-{
+float stddev(const std::vector<float> &values, float mean_val) {
   float sum_sq = 0.0f;
-  for (float v : values)
-  {
+  for (float v : values) {
     sum_sq += (v - mean_val) * (v - mean_val);
   }
   return std::sqrt(sum_sq / static_cast<float>(values.size()));
 }
 // skewness: simmetria
 float skewness(const std::vector<float> &values, float mean_val,
-               float std_val)
-{
+               float std_val) {
   float skew_sum = 0.0f;
   for (float v : values)
     skew_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 3));
@@ -42,8 +34,7 @@ float skewness(const std::vector<float> &values, float mean_val,
 }
 // kurtosis: appiattimento
 float kurtosis(const std::vector<float> &values, float mean_val,
-               float std_val)
-{
+               float std_val) {
   float kurt_sum = 0.0f;
   for (float v : values)
     kurt_sum += static_cast<float>(std::pow((v - mean_val) / std_val, 4));
@@ -51,22 +42,18 @@ float kurtosis(const std::vector<float> &values, float mean_val,
 }
 
 // Salvataggio dei dati su file
-void save_to_file(const std::string &filename, const std::vector<float> &data)
-{
+void save_to_file(const std::string &filename, const std::vector<float> &data) {
   std::ofstream file(filename);
-  if (!file)
-  {
+  if (!file) {
     std::cerr << "Error: cannot open file " << filename << " for writing.\n";
     return;
   }
-  for (float val : data)
-    file << val << '\n';
+  for (float val : data) file << val << '\n';
   file.close();
 }
 
 void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
-                    float sigma_theta0, const Billiard &billiard)
-{
+                    float sigma_theta0, const Billiard &billiard) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::normal_distribution<float> dist_y0(mu_y0, sigma_y0);
@@ -78,27 +65,27 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
   int discarded_generated_balls = 0;
   int discarded_left_balls = 0;
 
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     float y0 = dist_y0(gen);
     float theta0 = dist_theta0(gen);
     // Controllo che y0 sia tra upper e lower surface intercept
-    if (y0 > billiard.upper_surface_intercept() || y0 < billiard.lower_surface_intercept())
-    {
-      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: y out of range, y = " << y0 << "\n"
+    if (y0 > billiard.upper_surface_intercept() ||
+        y0 < billiard.lower_surface_intercept()) {
+      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: y out of range, y = "
+         << y0 << "\n"
                 << "\n";*/
       ++discarded_generated_balls;
-      continue; // Scarta il ciclo corrente
+      continue;  // Scarta il ciclo corrente
     }
 
     // Controllo che theta sia tra -90° e 90°
     float theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
-    if (theta0_deg > 90.f || theta0_deg < -90.f)
-    {
-      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range, theta = " << theta0_deg << "\n"
+    if (theta0_deg > 90.f || theta0_deg < -90.f) {
+      /*std::cout << "BALL N. " << i + 1 << " DISCARDED: theta out of range,
+         theta = " << theta0_deg << "\n"
                  << "\n";*/
       ++discarded_generated_balls;
-      continue; // Scarta il ciclo corrente
+      continue;  // Scarta il ciclo corrente
     }
     /*std::cout << "BALL N. " << i + 1 << " SHOT\n"
               << "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
@@ -106,16 +93,19 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
     float x0 = 0;
     int r = 0;
     // Caso speciale: nessun rimbalzo, va direttamente alla destra
-    float y_direct = static_cast<float>(tan(theta0)) * billiard.getLength() + y0;
-    if (y_direct <= billiard.upper_right_height() && y_direct >= billiard.lower_right_height())
-    {
+    float y_direct =
+        static_cast<float>(tan(theta0)) * billiard.getLength() + y0;
+    if (y_direct <= billiard.upper_right_height() &&
+        y_direct >= billiard.lower_right_height()) {
       y_finals.push_back(y_direct);
       theta_finals.push_back(theta0);
       /*std::cout << "BALL N. " << i + 1 << " SHOT\n"
                 << "GENERATED VALUES: theta = " << (theta0 * 180.f) / (M_PI)
                 << "   y = " << y0 << "\n";
-      std::cout << "NO BOUNCE - DIRECT TO EXIT: theta = " << (theta0 * 180.f) / M_PI
-                << "  y = " << y_direct << "   x = " << billiard.getLength() << "\n\n";*/
+      std::cout << "NO BOUNCE - DIRECT TO EXIT: theta = " << (theta0 * 180.f) /
+      M_PI
+                << "  y = " << y_direct << "   x = " << billiard.getLength() <<
+      "\n\n";*/
       continue;
     }
 
@@ -123,80 +113,80 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
                (billiard.upper_slope() - static_cast<float>((theta0)));
     float x2 = (y0 - billiard.lower_surface_intercept()) /
                (billiard.lower_slope() - static_cast<float>(tan(theta0)));
-    if (x1 > x2)
-    {
+    if (x1 > x2) {
       r = 1;
       x0 = x1;
       y0 = static_cast<float>(tan(theta0)) * x0 + y0;
-      theta0 = -(theta0 - 2.f * static_cast<float>(atan(billiard.upper_slope())));
-    }
-    else
-    {
+      theta0 =
+          -(theta0 - 2.f * static_cast<float>(atan(billiard.upper_slope())));
+    } else {
       r = 2;
       x0 = x2;
       y0 = static_cast<float>(tan(theta0)) * x0 + y0;
-      theta0 = -(theta0 - 2.f * atan(billiard.lower_slope()));
+      theta0 = -(theta0 - 2.f * static_cast<float>(atan(billiard.lower_slope())));
     }
 
-    do
-    {
+    do {
       /*std::cout << "theta = " << (theta0 * 180.f) / (M_PI) << "  y = " << y0
                 << "   x0 = " << x0 << "\n ";*/
-      float a = (((powf(-1, static_cast<float>(r))) * billiard.upper_surface_intercept()) - y0 +
-                 tanf(theta0) * x0) /
-                (tanf(theta0) + (powf(static_cast<float>(-1), static_cast<float>(r + 1))) * billiard.upper_slope());
-      if (a <= billiard.getLength() && a >= 0)
-      {
-        x0 = ((powf(-1, static_cast<float>(r)))* billiard.upper_surface_intercept() - y0 +
-        (tanf(theta0)) * x0 )/
-             (tanf(theta0) + (powf(-1, static_cast<float>(r + 1))) * billiard.upper_slope());
-        y0 =(powf(-1, static_cast<float>(r)))* billiard.upper_slope() * x0 +
-        powf(-1,static_cast<float>(r)) * billiard.upper_surface_intercept();
-        theta0 = -(theta0 - 2.f * (powf(-1, static_cast<float>(r))) * atanf(billiard.upper_slope()));
+      float a = (((powf(-1, static_cast<float>(r))) *
+                  billiard.upper_surface_intercept()) -
+                 y0 + tanf(theta0) * x0) /
+                (tanf(theta0) +
+                 (powf(static_cast<float>(-1), static_cast<float>(r + 1))) *
+                     billiard.upper_slope());
+      if (a <= billiard.getLength() && a >= 0) {
+        x0 = ((powf(-1, static_cast<float>(r))) *
+                  billiard.upper_surface_intercept() -
+              y0 + (tanf(theta0)) * x0) /
+             (tanf(theta0) +
+              (powf(-1, static_cast<float>(r + 1))) * billiard.upper_slope());
+        y0 = (powf(-1, static_cast<float>(r))) * billiard.upper_slope() * x0 +
+             powf(-1, static_cast<float>(r)) *
+                 billiard.upper_surface_intercept();
+        theta0 = -(theta0 - 2.f * (powf(-1, static_cast<float>(r))) *
+                                atanf(billiard.upper_slope()));
         theta0_deg = (theta0 * 180.f) / static_cast<float>(M_PI);
 
         r++;
-      }
-      else
-      {
+      } else {
         break;
       }
 
     } while (x0 <= billiard.getLength() && x0 >= 0);
 
-    float y_final =
-        tanf(theta0) * (billiard.getLength() - x0) + y0;
-    if (theta0_deg < 90 && theta0_deg > -90 && y_final <= billiard.upper_right_height() && y_final >= billiard.lower_right_height())
-    {
-
-      //float x_final = (y_final - y0) / tanf(theta0) + x0;
+    float y_final = tanf(theta0) * (billiard.getLength() - x0) + y0;
+    if (theta0_deg < 90 && theta0_deg > -90 &&
+        y_final <= billiard.upper_right_height() &&
+        y_final >= billiard.lower_right_height()) {
+      // float x_final = (y_final - y0) / tanf(theta0) + x0;
       y_finals.push_back(y_final);
       theta_finals.push_back(theta0);
       /*std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
-                << "  y = " << y_final << "   x = " << x_final << "\n " << "\n";*/
-    }
-    else if (y_final > billiard.upper_right_height() || y_final < billiard.lower_right_height() || theta0_deg > 90 || theta0_deg < -90)
-    {
-      //float y_left =tanf(theta0) * (0 - x0) + y0;
+                << "  y = " << y_final << "   x = " << x_final << "\n " <<
+         "\n";*/
+    } else if (y_final > billiard.upper_right_height() ||
+               y_final < billiard.lower_right_height() || theta0_deg > 90 ||
+               theta0_deg < -90) {
+      // float y_left =tanf(theta0) * (0 - x0) + y0;
       /*std::cout << "FINAL: theta = " << (theta0 * 180.f) / (M_PI)
                 << "  y = " << y_left << "   x = " << 0 << "\n ";
       std::cout << "DISCARDED: DIDN'T GET OUT FROM THE RIGHT SIDE \n \n";*/
       ++discarded_left_balls;
     }
   }
-  if (discarded_generated_balls + discarded_left_balls != 0)
-  {
+  if (discarded_generated_balls + discarded_left_balls != 0) {
     std::cout << "\n"
-              << discarded_generated_balls + discarded_left_balls << " BALLS OUT OF " << N
-              << " WERE DISCARDED:\n";
+              << discarded_generated_balls + discarded_left_balls
+              << " BALLS OUT OF " << N << " WERE DISCARDED:\n";
   }
-  if (discarded_generated_balls != 0)
-  {
-    std::cout << discarded_generated_balls << " DISCARDED BECAUSE GENERATED OUT OF THE LIMITS" << "\n ";
+  if (discarded_generated_balls != 0) {
+    std::cout << discarded_generated_balls
+              << " DISCARDED BECAUSE GENERATED OUT OF THE LIMITS" << "\n ";
   }
-  if (discarded_left_balls != 0)
-  {
-    std::cout << discarded_left_balls << " DISCARDED BECAUSE DIDN'T GET OUT FROM THE RIGHT SIDE\n";
+  if (discarded_left_balls != 0) {
+    std::cout << discarded_left_balls
+              << " DISCARDED BECAUSE DIDN'T GET OUT FROM THE RIGHT SIDE\n";
   }
 
   // Calcolo delle statistiche
@@ -217,7 +207,8 @@ void run_statistics(int N, float mu_y0, float sigma_y0, float mu_theta0,
             << ", Kurtosis = " << ku_y << "\n";
 
   std::cout << "Final theta:\n";
-  std::cout << "Mean = " << (mt*180.f)/M_PI << ", StdDev = " << (st*180.f)/M_PI << ", Skewness = " << sk_t
+  std::cout << "Mean = " << (mt * 180.f) / M_PI
+            << ", StdDev = " << (st * 180.f) / M_PI << ", Skewness = " << sk_t
             << ", Kurtosis = " << ku_t << "\n";
 
   // Salvataggio su file
